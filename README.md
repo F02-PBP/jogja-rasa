@@ -1,11 +1,9 @@
 # JogjaRasa 🍛 
 
-\~ Selamat datang di JogjaRasa! \~
-
 > Proyek ini dibuat dalam memenuhi tugas Proyek Tengah Semester (PTS) pada mata kuliah Pemrograman Berbasis Platform (CSGE602022).
 
 ## 👥 Anggota Kelompok (F02)
-Selamat datang di repositori kelompok kami ^___^
+
 | Nama | NPM | Github | 
 | -- | -- | -- |
 | Grace Karina | 2306275834 | gracekarinn |
@@ -16,14 +14,42 @@ Selamat datang di repositori kelompok kami ^___^
 
 ## 📜 Cerita Aplikasi
 
-JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner Daerah Istimewa Yogyakarta dan mewujudkan Gastronomi Nusantara. Nama "JogjaRasa" berasal dari kata "Yogyakarta," sebuah provinsi di Indonesia yang terletak di timur Pulau Jawa, dan kata "Rasa," yang berarti cita rasa. Dengan demikian, JogjaRasa mencerminkan cita rasa khas makanan Yogyakarta. Aplikasi ini memfasilitasi pengguna dalam menemukan rekomendasi tempat makan, baik berdasarkan jenis makanan yang dicari maupun lokasinya. Selain itu, JogjaRasa juga memungkinkan pengguna untuk terhubung dengan pengguna lain melalui forum, memberikan penilaian terhadap restoran, serta markah (_bookmark_).
+🌟 **Selamat datang di JogjaRasa!** 🌟
 
-## 🌍 Coba Aplikasi
-Aplikasi JogjaRasa sekarang bisa dicoba secara langsung di [JogjaRasa Live](http://grace-karina31-jogjarasa.pbp.cs.ui.ac.id/). 
+***"Rasakan keberagaman kuliner, temukan cerita di setiap suapan!"***
+
+**JogjaRasa** adalah aplikasi yang didedikasikan untuk memperkenalkan kekayaan kuliner Daerah Istimewa Yogyakarta, sebuah kota yang kaya akan budaya dan dikenal sebagai pusat kuliner yang memikat. Nama "JogjaRasa" berasal dari kata "Yogyakarta," sebuah provinsi di Indonesia yang terletak di timur Pulau Jawa, dan kata "Rasa," yang berarti cita rasa. Dengan demikian, JogjaRasa mencerminkan cita rasa khas makanan Yogyakarta, menjadikannya pintu gerbang bagi siapa saja yang ingin menjelajahi kelezatan kuliner kota ini. 
+
+JogjaRasa mengintegrasikan kemudahan teknologi dengan eksplorasi cita rasa lokal. Aplikasi ini membantu pengguna menemukan rekomendasi tempat makan berdasarkan jenis makanan yang dicari serta lokasi yang strategis. Dari warung sederhana hingga restoran yang menyajikan hidangan tradisional, JogjaRasa menjadikan setiap perjalanan kuliner sebagai pengalaman yang mudah dan menyenangkan.
+
+## 📅 Fitur Unggulan
+
+### Reservasi Online
+- **Pemesanan Praktis:** Melakukan reservasi tempat atau makanan secara online.
+- **Tiket Digital:** Setiap reservasi diterbitkan dalam bentuk tiket digital yang dapat diperbarui sesuai kebutuhan.
+
+### Forum Diskusi
+- **Berbagi Cerita:** Pengguna dapat berbagi ulasan, cerita, dan rekomendasi tentang tempat makan yang telah dikunjungi.
+- **Interaksi Komunitas:** Ruang berbagi pengalaman kuliner untuk memberikan wawasan baru.
+
+### Penilaian dan Bookmark
+- **Ulasan Langsung:** Pengguna dapat memberikan penilaian pada restoran dan menyimpan tempat makan favorit untuk kunjungan berikutnya.
+
+## 🌟 Kenapa Memilih JogjaRasa?
+
+JogjaRasa tidak hanya berfungsi sebagai panduan kuliner, tetapi juga menjadi penghubung antara wisatawan dan masyarakat lokal melalui kekayaan cita rasa yang ditawarkan kota ini.
+
+
+## 🎉 Bergabunglah Bersama Kami!
+
+Aplikasi JogjaRasa sekarang bisa dicoba secara langsung di [JogjaRasa](http://grace-karina31-jogjarasa.pbp.cs.ui.ac.id/). 
 
 - 🔑 Jangan lupa untuk **login** atau **registrasi** jika belum memiliki akun.
 - 🎯 Mulailah mencari tempat makan terbaik di Yogyakarta!
 
+**Selamat menjelajah!** 🌍✨
+
+---
 
 ## 📚 Daftar Modul
 Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengembang dari setiap modul.
