@@ -2,7 +2,7 @@
 
 \~ Selamat datang di JogjaRasa! \~
 
-> Proyek ini dibuat untuk memenuhi tugas Proyek Tengah Semester (PTS) pada mata kuliah Pemrograman Berbasis Platform (CSGE602022) yang diselenggarakan oleh Fakultas Ilmu Komputer, Universitas Indonesia Tahun Ajaran 2023/2024 Semester Gasal.
+> Proyek ini dibuat dalam memenuhi tugas Proyek Tengah Semester (PTS) pada mata kuliah Pemrograman Berbasis Platform (CSGE602022).
 
 ## 👥 Anggota Kelompok (F02)
 Selamat datang di repositori kelompok kami ^___^
@@ -16,7 +16,7 @@ Selamat datang di repositori kelompok kami ^___^
 
 ## 📜 Cerita Aplikasi
 
-JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner Daerah Istimewa Yogyakarta dan mewujudkan Gastronomi Nusantara. Nama "JogjaRasa" berasal dari kata "Yogyakarta," sebuah provinsi di Indonesia yang terletak di timur Pulau Jawa, dan kata "Rasa," yang berarti cita rasa. Dengan demikian, JogjaRasa mencerminkan cita rasa khas makanan Yogyakarta. Aplikasi ini memfasilitasi pengguna dalam menemukan rekomendasi tempat makan, baik berdasarkan jenis makanan yang dicari maupun lokasinya. Selain itu, JogjaRasa juga memungkinkan pengguna untuk terhubung dengan pengguna lain, memberikan penilaian, serta markah (_bookmark_).
+JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner Daerah Istimewa Yogyakarta dan mewujudkan Gastronomi Nusantara. Nama "JogjaRasa" berasal dari kata "Yogyakarta," sebuah provinsi di Indonesia yang terletak di timur Pulau Jawa, dan kata "Rasa," yang berarti cita rasa. Dengan demikian, JogjaRasa mencerminkan cita rasa khas makanan Yogyakarta. Aplikasi ini memfasilitasi pengguna dalam menemukan rekomendasi tempat makan, baik berdasarkan jenis makanan yang dicari maupun lokasinya. Selain itu, JogjaRasa juga memungkinkan pengguna untuk terhubung dengan pengguna lain melalui forum, memberikan penilaian terhadap restoran, serta markah (_bookmark_).
 
 ## 📚 Daftar Modul
 Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengembang dari setiap modul.
@@ -44,7 +44,7 @@ Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengemban
 - Melihat diskusi yang sudah ada, tanpa memberikan tanggapan atau membuat topik baru.
 
 ### 2. 👩‍💻 Admin
-- Menghapus user yang terdaftar pada aplikasi Jogja Rasa.
+- Menghapus user yang terdaftar pada aplikasi JogjaRasa.
 - Mengubah database makanan dan restoran.
 - Menghapus review dan rating yang diberikan oleh user.
 
