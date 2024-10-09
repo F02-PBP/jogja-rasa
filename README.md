@@ -9,6 +9,18 @@ JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner D
 
 ## Roles
 
+### User
+- Mengakses informasi restoran dan makanan di JogjaRasa.
+- Memberikan rating dna review untuk restoran yang dipilih.
+- Menambah koneksi dengan user lain.
+- Menambah dan menghapus bookmark restoran yang dipilih.
+
+
+### Admin
+- Menghapus user yang terdaftar pada aplikasi jogjaRasa.
+- Mengubah database makanan dan restoran.
+- Menghapus review dan rating yang diberikan oleh user.
+
 ## Daftar Modul
 ### 1. **Search Engine**
 
@@ -29,17 +41,3 @@ Deskripsi
 ### 5. **Connect**
 
 Deskripsi
-
-## *Role* atau Peran Pengguna
-
-### User
-- Mengakses informasi restoran dan makanan di JogjaRasa.
-- Memberikan rating dna review untuk restoran yang dipilih.
-- Menambah koneksi dengan user lain.
-- Menambah dan menghapus bookmark restoran yang dipilih.
-
-
-### Admin
-- Menghapus user yang terdaftar pada aplikasi jogjaRasa.
-- Mengubah database makanan dan restoran.
-- Menghapus review dan rating yang diberikan oleh user.
