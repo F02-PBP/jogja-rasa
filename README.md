@@ -18,6 +18,13 @@ Selamat datang di repositori kelompok kami ^___^
 
 JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner Daerah Istimewa Yogyakarta dan mewujudkan Gastronomi Nusantara. Nama "JogjaRasa" berasal dari kata "Yogyakarta," sebuah provinsi di Indonesia yang terletak di timur Pulau Jawa, dan kata "Rasa," yang berarti cita rasa. Dengan demikian, JogjaRasa mencerminkan cita rasa khas makanan Yogyakarta. Aplikasi ini memfasilitasi pengguna dalam menemukan rekomendasi tempat makan, baik berdasarkan jenis makanan yang dicari maupun lokasinya. Selain itu, JogjaRasa juga memungkinkan pengguna untuk terhubung dengan pengguna lain melalui forum, memberikan penilaian terhadap restoran, serta markah (_bookmark_).
 
+## 🌍 Coba Aplikasi
+Aplikasi JogjaRasa sekarang bisa dicoba secara langsung di [JogjaRasa Live](http://grace-karina31-jogjarasa.pbp.cs.ui.ac.id/). 
+
+- 🔑 Jangan lupa untuk **login** atau **registrasi** jika belum memiliki akun.
+- 🎯 Mulailah mencari tempat makan terbaik di Yogyakarta!
+
+
 ## 📚 Daftar Modul
 Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengembang dari setiap modul.
 
@@ -50,3 +57,4 @@ Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengemban
 
 ## Sumber *Dataset*
 *Dataset* yang kami gunakan dapat diakses pada tautan [berikut ini](https://docs.google.com/spreadsheets/d/1HOWVDKvhHSFdiAnUizqDHZQ1DrOtZfIu1O4QrA-wlpY/edit?usp=sharing). Data ini dikumpulkan secara manual dengan mengambil lokasi, deskripsi, serta nama restoran yang menjual makanan sesuai dengan nama restorannya.
+
