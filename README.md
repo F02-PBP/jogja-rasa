@@ -56,5 +56,5 @@ Berikut ini adalah daftar modul yang akan kami implementasikan beserta pengemban
 - Menghapus review dan rating yang diberikan oleh user.
 
 ## Sumber *Dataset*
-*Dataset* yang kami gunakan dapat diakses pada tautan [berikut ini](https://docs.google.com/spreadsheets/d/1HOWVDKvhHSFdiAnUizqDHZQ1DrOtZfIu1O4QrA-wlpY/edit?usp=sharing). Data ini dikumpulkan secara manual dengan mengambil lokasi, deskripsi, serta nama restoran yang menjual makanan sesuai dengan nama restorannya.
+*Dataset* yang kami gunakan dapat diakses pada tautan [berikut ini](https://docs.google.com/spreadsheets/d/1EWzbPrJWy8ChZi6N0tm_GsCz2lU1QidzWzlQ8C3sphI/edit?usp=sharing). Data ini dikumpulkan secara manual dengan mengambil lokasi, deskripsi, serta nama restoran yang menjual makanan sesuai dengan nama restorannya.
 
