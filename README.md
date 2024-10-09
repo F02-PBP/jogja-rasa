@@ -8,14 +8,14 @@ JogjaRasa adalah aplikasi yang dirancang untuk memperkenalkan kekayaan kuliner D
 ## Roles
 
 ### User
-- Mengakses informasi restoran dan makanan di JogjaRasa.
-- Memberikan rating dna review untuk restoran yang dipilih.
-- Menambah koneksi dengan user lain.
+- Mengakses informasi restoran dan makanan pada aplikasi Jogja Rasa.
+- Memberikan rating dan review untuk restoran yang dipilih.
+- Menambah koneksi dengan user lain yang terdaftar.
 - Menambah dan menghapus bookmark restoran yang dipilih.
 
 
 ### Admin
-- Menghapus user yang terdaftar pada aplikasi jogjaRasa.
+- Menghapus user yang terdaftar pada aplikasi Jogja Rasa.
 - Mengubah database makanan dan restoran.
 - Menghapus review dan rating yang diberikan oleh user.
 
