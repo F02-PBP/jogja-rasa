@@ -1,15 +1,24 @@
-{% extends 'base.html' %}
-<!-- prettier -->
-{% block content %}
-<h1>Mental Health Tracker</h1>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Restaurants</title>
+  </head>
+  <body>
+    <h1>List of Restaurants</h1>
 
-<h5>NPM:</h5>
-<p>{{ npm }}</p>
-<p></p>
-
-<h5>Name:</h5>
-<p>{{ name }}</p>
-
-<h5>Class:</h5>
-<p>{{ class }}</p>
-{% endblock content %}
+    <div class="restaurant-grid">
+      {% for restaurant in restaurants %}
+      <div class="restaurant-card">
+        <h2>{{ restaurant.name }}</h2>
+        <p><strong>Longitude:</strong> {{ restaurant.longitude }}</p>
+        <p><strong>Latitude:</strong> {{ restaurant.latitude }}</p>
+        <p><strong>Description:</strong> {{ restaurant.description }}</p>
+      </div>
+      {% empty %}
+      <p>No restaurants found.</p>
+      {% endfor %}
+    </div>
+  </body>
+</html>
