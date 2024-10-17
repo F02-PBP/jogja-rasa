@@ -1,24 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Restaurants</title>
-  </head>
-  <body>
-    <h1>List of Restaurants</h1>
+{% extends 'base.html' %} {% load static %}
+<!--Prettier-->
+{% block title %}Home{% endblock title %}
+<!--Prettier-->
+{% block content %}
+<!--Prettier-->
+{% include 'navbar.html' %}
+<main class="container mx-auto px-4 py-8">
+  <div class="mb-8 overflow-hidden relative">
+    <div
+      x-data="{ 
+                currentSlide: 0, 
+                slides: ['Selamat Datang di Jogja Rasa', 'Temukan Cita Rasa Lokal', 'Nikmati Kuliner Autentik Jogja']
+            }"
+      x-init="
+                setInterval(() => {
+                    currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+                }, 5000);
+            "
+      class="relative h-64 rounded-lg overflow-hidden"
+    >
+      <template x-for="(slide, index) in slides" :key="index">
+        <div
+          x-show="currentSlide === index"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 transform scale-90"
+          x-transition:enter-end="opacity-100 transform scale-100"
+          x-transition:leave="transition ease-in duration-300"
+          x-transition:leave-start="opacity-100 transform scale-100"
+          x-transition:leave-end="opacity-0 transform scale-90"
+          class="absolute inset-0 flex items-center justify-center bg-navy-600 text-white text-2xl"
+        >
+          <span x-text="slide"></span>
+        </div>
+      </template>
 
-    <div class="restaurant-grid">
-      {% for restaurant in restaurants %}
-      <div class="restaurant-card">
-        <h2>{{ restaurant.name }}</h2>
-        <p><strong>Longitude:</strong> {{ restaurant.longitude }}</p>
-        <p><strong>Latitude:</strong> {{ restaurant.latitude }}</p>
-        <p><strong>Description:</strong> {{ restaurant.description }}</p>
+      <button
+        @click="currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1"
+        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-navy-600 p-2 rounded-full transition duration-300"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+      <button
+        @click="currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-navy-600 p-2 rounded-full transition duration-300"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+      <div
+        class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"
+      >
+        <template x-for="(slide, index) in slides" :key="index">
+          <button
+            @click="currentSlide = index"
+            class="w-3 h-3 rounded-full transition duration-300"
+            :class="{ 'bg-white': currentSlide === index, 'bg-gray-400': currentSlide !== index }"
+          ></button>
+        </template>
       </div>
-      {% empty %}
-      <p>No restaurants found.</p>
-      {% endfor %}
     </div>
-  </body>
-</html>
+  </div>
+  <div class="mb-8">
+    <form class="space-y-4">
+      <div
+        class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
+      >
+        <input
+          type="text"
+          placeholder="Cari restoran atau makanan..."
+          class="form-input w-full sm:flex-grow"
+        />
+        <button type="submit" class="btn-primary w-full sm:w-auto py-3 text-lg">
+          Cari
+        </button>
+      </div>
+      <div class="flex flex-row items-center gap-2 bg-gray-100 p-2 rounded-md">
+        <label class="flex items-center space-x-2 text-sm whitespace-nowrap">
+          <input type="checkbox" class="form-checkbox" />
+          <span>Dekat Saya</span>
+        </label>
+        <select class="form-select text-sm w-44">
+          <option value="">Semua Makanan</option>
+          <option value="soto">Soto</option>
+          <option value="gudeg">Gudeg</option>
+          <option value="bakpia">Bakpia</option>
+          <option value="sate">Sate</option>
+          <option value="nasi goreng">Nasi Goreng</option>
+          <option value="olahan ayam">Olahan Ayam</option>
+          <option value="olahan ikan">Olahan Ikan</option>
+          <option value="olahan mie">Olahan Mie</option>
+          <option value="kopi">Kopi</option>
+        </select>
+        <select class="form-select text-sm w-28">
+          <option value="">Rentang Harga</option>
+          <option value="low">$</option>
+          <option value="medium">$$</option>
+          <option value="high">$$$</option>
+        </select>
+      </div>
+    </form>
+  </div>
+  <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">
+    Temukan Kelezatan Kuliner Jogja
+  </h1>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for restaurant in restaurants %}
+    <div
+      class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full"
+    >
+      <div class="p-4 flex-grow">
+        <h2 class="text-xl font-semibold mb-2 text-navy-700">
+          {{ restaurant.name }}
+        </h2>
+        <p class="text-gray-600 mb-4">
+          {{ restaurant.description|truncatechars:100 }}
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 flex justify-between items-center">
+        <span class="text-sm text-gray-500"
+          >Lokasi: {{ restaurant.latitude }}</span
+        >
+        <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+      </div>
+    </div>
+    {% empty %}
+    <p class="col-span-3 text-center text-gray-500">
+      Tidak ada restoran ditemukan.
+    </p>
+    {% endfor %}
+  </div>
+</main>
+{% include 'footer.html' %} {% endblock content %}
