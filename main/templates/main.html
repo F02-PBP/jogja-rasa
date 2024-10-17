@@ -100,11 +100,7 @@
         </button>
       </div>
       <div class="flex flex-row items-center gap-2 bg-gray-100 p-2 rounded-md">
-        <label class="flex items-center space-x-2 text-sm whitespace-nowrap">
-          <input type="checkbox" class="form-checkbox" />
-          <span>Dekat Saya</span>
-        </label>
-        <select class="form-select text-sm w-44">
+        <select class="form-select text-sm w-40" id="food-type-select">
           <option value="">Semua Makanan</option>
           <option value="soto">Soto</option>
           <option value="gudeg">Gudeg</option>
@@ -116,12 +112,17 @@
           <option value="olahan mie">Olahan Mie</option>
           <option value="kopi">Kopi</option>
         </select>
-        <select class="form-select text-sm w-28">
-          <option value="">Rentang Harga</option>
-          <option value="low">$</option>
-          <option value="medium">$$</option>
-          <option value="high">$$$</option>
+        <select class="form-select text-sm w-40" id="area-select">
+          <option value="">Pilih Area</option>
+          <option value="malioboro">Malioboro</option>
+          <option value="kotagede">Kotagede</option>
+          <option value="prawirotaman">Prawirotaman</option>
+          <option value="ugm">Area UGM</option>
+          <option value="adisucipto">Bandara Adisucipto</option>
         </select>
+        <button type="button" id="filter-button" class="btn-secondary text-sm">
+          Filter
+        </button>
       </div>
     </form>
   </div>
@@ -155,4 +156,83 @@
     {% endfor %}
   </div>
 </main>
-{% include 'footer.html' %} {% endblock content %}
+{% include 'footer.html' %}
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchForm = document.querySelector("form");
+    const areaSelect = document.getElementById("area-select");
+    const searchInput = document.querySelector('input[type="text"]');
+    const foodTypeSelect = document.getElementById("food-type-select");
+    const filterButton = document.getElementById("filter-button");
+    const restaurantGrid = document.querySelector(".grid");
+
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      fetchRestaurants();
+    });
+
+    filterButton.addEventListener("click", function () {
+      fetchRestaurants();
+    });
+
+    function fetchRestaurants() {
+      const searchParams = {
+        query: searchInput.value,
+        food_type: foodTypeSelect.value,
+        area: areaSelect.value,
+      };
+
+      let url = "/api/restaurants?";
+      if (searchParams.query)
+        url += `query=${encodeURIComponent(searchParams.query)}&`;
+      if (searchParams.food_type)
+        url += `food_type=${encodeURIComponent(searchParams.food_type)}&`;
+      if (searchParams.area)
+        url += `area=${encodeURIComponent(searchParams.area)}&`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((restaurants) => displayRestaurants(restaurants))
+        .catch((error) => console.error("Error:", error));
+    }
+
+    function displayRestaurants(restaurants) {
+      restaurantGrid.innerHTML = "";
+      if (restaurants.length === 0) {
+        restaurantGrid.innerHTML =
+          '<p class="col-span-3 text-center text-gray-500">Tidak ada restoran ditemukan.</p>';
+        return;
+      }
+
+      restaurants.forEach((restaurant) => {
+        const restaurantCard = document.createElement("div");
+        restaurantCard.className =
+          "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
+        restaurantCard.innerHTML = `
+          <div class="p-4 flex-grow">
+            <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+              restaurant.name
+            }</h2>
+            <p class="text-gray-600 mb-4">${
+              restaurant.description.length > 100
+                ? restaurant.description.substring(0, 97) + "..."
+                : restaurant.description
+            }</p>
+          </div>
+          <div class="p-4 bg-gray-50 flex justify-between items-center">
+            <span class="text-sm text-gray-500">Lokasi: ${
+              restaurant.distance
+                ? restaurant.distance.toFixed(2) + " km"
+                : `${restaurant.latitude}, ${restaurant.longitude}`
+            }</span>
+            <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+          </div>
+        `;
+        restaurantGrid.appendChild(restaurantCard);
+      });
+    }
+    fetchRestaurants();
+  });
+</script>
+{% endblock content %}
