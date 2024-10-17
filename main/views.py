@@ -3,14 +3,17 @@ from django.contrib.auth import login as auth_login
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib import messages
 from .forms import UserRegistrationForm, LoginForm
+from restaurants.models import Restaurant
 
 # ini bisa diganti bebas ya
 def show_landing_page(request):
+    restaurants = Restaurant.objects.all()
     context = {
         'can_view_restaurants': True,
         'can_search_nearby': True,
         'can_view_reviews': True,
         'can_view_discussions': True,
+        'restaurants': restaurants,
     }
     if request.user.is_authenticated:
         context.update({
