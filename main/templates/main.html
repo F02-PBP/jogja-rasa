@@ -1,22 +1,23 @@
-{% extends 'base.html' %} {% load static %}
+{% extends 'base.html' %}
 <!--Prettier-->
-{% block title %}Home{% endblock title %}
+{% load static %}
 <!--Prettier-->
-{% block content %}
+{% block title %}Home{% endblock title %} {% block content %}
 <!--Prettier-->
 {% include 'navbar.html' %}
 <main class="container mx-auto px-4 py-8">
+  <!-- Hero Section with Slider -->
   <div class="mb-8 overflow-hidden relative">
     <div
       x-data="{ 
-                currentSlide: 0, 
-                slides: ['Selamat Datang di Jogja Rasa', 'Temukan Cita Rasa Lokal', 'Nikmati Kuliner Autentik Jogja']
-            }"
+        currentSlide: 0, 
+        slides: ['Selamat Datang di Jogja Rasa', 'Temukan Cita Rasa Lokal', 'Nikmati Kuliner Autentik Jogja']
+      }"
       x-init="
-                setInterval(() => {
-                    currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
-                }, 5000);
-            "
+        setInterval(() => {
+          currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+        }, 5000);
+      "
       class="relative h-64 rounded-lg overflow-hidden"
     >
       <template x-for="(slide, index) in slides" :key="index">
@@ -33,65 +34,18 @@
           <span x-text="slide"></span>
         </div>
       </template>
-
-      <button
-        @click="currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1"
-        class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-navy-600 p-2 rounded-full transition duration-300"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-      <button
-        @click="currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1"
-        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 text-navy-600 p-2 rounded-full transition duration-300"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
-      </button>
-      <div
-        class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2"
-      >
-        <template x-for="(slide, index) in slides" :key="index">
-          <button
-            @click="currentSlide = index"
-            class="w-3 h-3 rounded-full transition duration-300"
-            :class="{ 'bg-white': currentSlide === index, 'bg-gray-400': currentSlide !== index }"
-          ></button>
-        </template>
-      </div>
     </div>
   </div>
+
+  <!-- Search Section -->
   <div class="mb-8">
-    <form class="space-y-4">
+    <form id="searchForm" class="space-y-4">
       <div
         class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
       >
         <input
           type="text"
+          id="searchInput"
           placeholder="Cari restoran atau makanan..."
           class="form-input w-full sm:flex-grow"
         />
@@ -99,37 +53,17 @@
           Cari
         </button>
       </div>
-      <div class="flex flex-row items-center gap-2 bg-gray-100 p-2 rounded-md">
-        <select class="form-select text-sm w-40" id="food-type-select">
-          <option value="">Semua Makanan</option>
-          <option value="soto">Soto</option>
-          <option value="gudeg">Gudeg</option>
-          <option value="bakpia">Bakpia</option>
-          <option value="sate">Sate</option>
-          <option value="nasi goreng">Nasi Goreng</option>
-          <option value="olahan ayam">Olahan Ayam</option>
-          <option value="olahan ikan">Olahan Ikan</option>
-          <option value="olahan mie">Olahan Mie</option>
-          <option value="kopi">Kopi</option>
-        </select>
-        <select class="form-select text-sm w-40" id="area-select">
-          <option value="">Pilih Area</option>
-          <option value="malioboro">Malioboro</option>
-          <option value="kotagede">Kotagede</option>
-          <option value="prawirotaman">Prawirotaman</option>
-          <option value="ugm">Area UGM</option>
-          <option value="adisucipto">Bandara Adisucipto</option>
-        </select>
-        <button type="button" id="filter-button" class="btn-secondary text-sm">
-          Filter
-        </button>
-      </div>
     </form>
   </div>
+
+  <!-- Restaurant Grid -->
   <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">
     Temukan Kelezatan Kuliner Jogja
   </h1>
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div
+    id="restaurantGrid"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+  >
     {% for restaurant in restaurants %}
     <div
       class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full"
@@ -143,9 +77,7 @@
         </p>
       </div>
       <div class="p-4 bg-gray-50 flex justify-between items-center">
-        <span class="text-sm text-gray-500"
-          >Lokasi: {{ restaurant.latitude }}</span
-        >
+        <span class="text-sm text-gray-500">{{ restaurant.location }}</span>
         <a href="#" class="btn-primary text-sm">Lihat Menu</a>
       </div>
     </div>
@@ -160,36 +92,18 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const searchForm = document.querySelector("form");
-    const areaSelect = document.getElementById("area-select");
-    const searchInput = document.querySelector('input[type="text"]');
-    const foodTypeSelect = document.getElementById("food-type-select");
-    const filterButton = document.getElementById("filter-button");
-    const restaurantGrid = document.querySelector(".grid");
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const restaurantGrid = document.getElementById("restaurantGrid");
 
     searchForm.addEventListener("submit", function (e) {
       e.preventDefault();
       fetchRestaurants();
     });
 
-    filterButton.addEventListener("click", function () {
-      fetchRestaurants();
-    });
-
     function fetchRestaurants() {
-      const searchParams = {
-        query: searchInput.value,
-        food_type: foodTypeSelect.value,
-        area: areaSelect.value,
-      };
-
-      let url = "/api/restaurants?";
-      if (searchParams.query)
-        url += `query=${encodeURIComponent(searchParams.query)}&`;
-      if (searchParams.food_type)
-        url += `food_type=${encodeURIComponent(searchParams.food_type)}&`;
-      if (searchParams.area)
-        url += `area=${encodeURIComponent(searchParams.area)}&`;
+      const searchQuery = searchInput.value;
+      const url = `/api/restaurants?query=${encodeURIComponent(searchQuery)}`;
 
       fetch(url)
         .then((response) => response.json())
@@ -199,6 +113,7 @@
 
     function displayRestaurants(restaurants) {
       restaurantGrid.innerHTML = "";
+
       if (restaurants.length === 0) {
         restaurantGrid.innerHTML =
           '<p class="col-span-3 text-center text-gray-500">Tidak ada restoran ditemukan.</p>';
@@ -206,33 +121,30 @@
       }
 
       restaurants.forEach((restaurant) => {
-        const restaurantCard = document.createElement("div");
-        restaurantCard.className =
+        const card = document.createElement("div");
+        card.className =
           "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
-        restaurantCard.innerHTML = `
-          <div class="p-4 flex-grow">
-            <h2 class="text-xl font-semibold mb-2 text-navy-700">${
-              restaurant.name
-            }</h2>
-            <p class="text-gray-600 mb-4">${
-              restaurant.description.length > 100
-                ? restaurant.description.substring(0, 97) + "..."
-                : restaurant.description
-            }</p>
-          </div>
-          <div class="p-4 bg-gray-50 flex justify-between items-center">
-            <span class="text-sm text-gray-500">Lokasi: ${
-              restaurant.distance
-                ? restaurant.distance.toFixed(2) + " km"
-                : `${restaurant.latitude}, ${restaurant.longitude}`
-            }</span>
-            <a href="#" class="btn-primary text-sm">Lihat Menu</a>
-          </div>
-        `;
-        restaurantGrid.appendChild(restaurantCard);
+        card.innerHTML = `
+        <div class="p-4 flex-grow">
+          <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+            restaurant.name
+          }</h2>
+          <p class="text-gray-600 mb-4">${
+            restaurant.description.length > 100
+              ? restaurant.description.substring(0, 97) + "..."
+              : restaurant.description
+          }</p>
+        </div>
+        <div class="p-4 bg-gray-50 flex justify-between items-center">
+          <span class="text-sm text-gray-500">${
+            restaurant.location || "Location not specified"
+          }</span>
+          <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+        </div>
+      `;
+        restaurantGrid.appendChild(card);
       });
     }
-    fetchRestaurants();
   });
 </script>
 {% endblock content %}
