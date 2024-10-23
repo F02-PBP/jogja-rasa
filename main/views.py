@@ -1,16 +1,23 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, logout
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.contrib import messages
 from .forms import UserRegistrationForm, LoginForm
+from restaurants.models import Restaurant
+from django.http import JsonResponse
+from django.db.models import Q
+from geopy.distance import geodesic
+import csv
 
 # ini bisa diganti bebas ya
 def show_landing_page(request):
+    restaurants = Restaurant.objects.all()
     context = {
         'can_view_restaurants': True,
         'can_search_nearby': True,
         'can_view_reviews': True,
         'can_view_discussions': True,
+        'restaurants': restaurants,
     }
     if request.user.is_authenticated:
         context.update({
@@ -48,3 +55,26 @@ def login(request):
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
+
+def logout_user(request):
+    logout(request)
+    return redirect('main:show_landing_page') 
+
+def search_restaurants(request):
+    query = request.GET.get('query', '')
+    
+    restaurants = Restaurant.objects.all()
+    
+    if query:
+        restaurants = restaurants.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query)
+        )
+
+    data = [{
+        'name': restaurant.name,
+        'description': restaurant.description,
+        'location': restaurant.location if hasattr(restaurant, 'location') else None
+    } for restaurant in restaurants]
+
+    return JsonResponse(data, safe=False)

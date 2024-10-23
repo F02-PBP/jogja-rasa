@@ -1,15 +1,150 @@
 {% extends 'base.html' %}
-<!-- prettier -->
-{% block content %}
-<h1>Mental Health Tracker</h1>
+<!--Prettier-->
+{% load static %}
+<!--Prettier-->
+{% block title %}Home{% endblock title %} {% block content %}
+<!--Prettier-->
+{% include 'navbar.html' %}
+<main class="container mx-auto px-4 py-8">
+  <!-- Hero Section with Slider -->
+  <div class="mb-8 overflow-hidden relative">
+    <div
+      x-data="{ 
+        currentSlide: 0, 
+        slides: ['Selamat Datang di Jogja Rasa', 'Temukan Cita Rasa Lokal', 'Nikmati Kuliner Autentik Jogja']
+      }"
+      x-init="
+        setInterval(() => {
+          currentSlide = currentSlide === slides.length - 1 ? 0 : currentSlide + 1;
+        }, 5000);
+      "
+      class="relative h-64 rounded-lg overflow-hidden"
+    >
+      <template x-for="(slide, index) in slides" :key="index">
+        <div
+          x-show="currentSlide === index"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 transform scale-90"
+          x-transition:enter-end="opacity-100 transform scale-100"
+          x-transition:leave="transition ease-in duration-300"
+          x-transition:leave-start="opacity-100 transform scale-100"
+          x-transition:leave-end="opacity-0 transform scale-90"
+          class="absolute inset-0 flex items-center justify-center bg-navy-600 text-white text-2xl"
+        >
+          <span x-text="slide"></span>
+        </div>
+      </template>
+    </div>
+  </div>
 
-<h5>NPM:</h5>
-<p>{{ npm }}</p>
-<p></p>
+  <!-- Search Section -->
+  <div class="mb-8">
+    <form id="searchForm" class="space-y-4">
+      <div
+        class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
+      >
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Cari restoran atau makanan..."
+          class="form-input w-full sm:flex-grow"
+        />
+        <button type="submit" class="btn-primary w-full sm:w-auto py-3 text-lg">
+          Cari
+        </button>
+      </div>
+    </form>
+  </div>
 
-<h5>Name:</h5>
-<p>{{ name }}</p>
+  <!-- Restaurant Grid -->
+  <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">
+    Temukan Kelezatan Kuliner Jogja
+  </h1>
+  <div
+    id="restaurantGrid"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+  >
+    {% for restaurant in restaurants %}
+    <div
+      class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full"
+    >
+      <div class="p-4 flex-grow">
+        <h2 class="text-xl font-semibold mb-2 text-navy-700">
+          {{ restaurant.name }}
+        </h2>
+        <p class="text-gray-600 mb-4">
+          {{ restaurant.description|truncatechars:100 }}
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 flex justify-between items-center">
+        <span class="text-sm text-gray-500">{{ restaurant.location }}</span>
+        <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+      </div>
+    </div>
+    {% empty %}
+    <p class="col-span-3 text-center text-gray-500">
+      Tidak ada restoran ditemukan.
+    </p>
+    {% endfor %}
+  </div>
+</main>
+{% include 'footer.html' %}
 
-<h5>Class:</h5>
-<p>{{ class }}</p>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const restaurantGrid = document.getElementById("restaurantGrid");
+
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      fetchRestaurants();
+    });
+
+    function fetchRestaurants() {
+      const searchQuery = searchInput.value;
+      const url = `/api/restaurants?query=${encodeURIComponent(searchQuery)}`;
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((restaurants) => displayRestaurants(restaurants))
+        .catch((error) => console.error("Error:", error));
+    }
+
+    function displayRestaurants(restaurants) {
+      restaurantGrid.innerHTML = "";
+
+      if (restaurants.length === 0) {
+        restaurantGrid.innerHTML =
+          '<p class="col-span-3 text-center text-gray-500">Tidak ada restoran ditemukan.</p>';
+        return;
+      }
+
+      restaurants.forEach((restaurant) => {
+        const card = document.createElement("div");
+        card.className =
+          "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
+        card.innerHTML = `
+        <div class="p-4 flex-grow">
+          <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+            restaurant.name
+          }</h2>
+          <p class="text-gray-600 mb-4">${
+            restaurant.description.length > 100
+              ? restaurant.description.substring(0, 97) + "..."
+              : restaurant.description
+          }</p>
+        </div>
+        <div class="p-4 bg-gray-50 flex justify-between items-center">
+          <span class="text-sm text-gray-500">${
+            restaurant.location || "Location not specified"
+          }</span>
+          <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+        </div>
+      `;
+        restaurantGrid.appendChild(card);
+      });
+    }
+  });
+</script>
 {% endblock content %}
