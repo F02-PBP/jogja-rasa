@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import register, login, show_landing_page, logout_user, search_restaurants
 
 app_name = 'main'
@@ -9,4 +9,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('logout/', logout_user, name='logout'),
     path('api/restaurants', search_restaurants, name='search_restaurants'),
+    path('forum/', include('forum.urls', namespace='forum')),
 ]
