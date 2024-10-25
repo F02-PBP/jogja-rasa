@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import register, login, show_landing_page, logout_user, search_restaurants, rekomendasi_makanan, profile
+from .views import add_reservation,show_json,show_xml, show_xml_by_id, show_json_by_id
 app_name = 'main'
 
 urlpatterns = [
@@ -10,4 +11,9 @@ urlpatterns = [
     path('search_restaurants/', search_restaurants, name='search_restaurants'),
     path('get_recommendations/', rekomendasi_makanan, name='get_recommendations'),
     path('profile/', profile, name='profile'),
+    path('xml/', show_xml, name='show_xml'),
+    path('json/', show_json, name='show_json'),
+    path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),
+    path('add_reservation/', add_reservation, name='add_reservation'),
 ]

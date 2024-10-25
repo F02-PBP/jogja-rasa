@@ -1,4 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from main.models import *
-# Create your views here.
+from reservation.models import Reservation
+from reservation.forms import ReservationForm
 
+def show_reservation(request):
+    reservation_data = Reservation.objects.all()
+
+    context = {
+        'reservation_data': reservation_data,
+    }
+    return render(request, "reservation.html", context)

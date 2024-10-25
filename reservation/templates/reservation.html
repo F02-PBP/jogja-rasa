@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Reservation</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="overflow-x-hidden px-4 md:px-8 py-14 min-h-screen bg-gray-100 flex justify-center">
+    <div class="p-2 relative w-full max-w-3xl">
+        <div class="p-8 bg-white shadow-md rounded-xl">
+            <h1 class="text-2xl font-bold mb-6">My Reservations</h1>
+            
+            <!-- Upcoming Reservations Section -->
+            <div class="mb-10">
+                <h2 class="text-xl font-semibold mb-4">Upcoming Reservations</h2>
+                {% if not reservation_data %}
+                <div class="text-gray-500 mb-4">No reservations</div>
+                <a href="{% url 'main:show_landing_page' %}" class="text-blue-500 hover:underline">Klik di sini untuk membuat reservasi!</a>
+                
+                {% else %}
+                <div class="gap-6 space-y-6 w-full">
+                    {% for data in reservation_data %}
+                        {% include 'reservation_card.html' with reservation_data=reservation_data %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <hr class="border-gray-300 mb-10">
+
+            <!-- Past Reservations Section -->
+            <div>
+                <h2 class="text-xl font-semibold mb-4">Past Reservations</h2>
+                <div class="text-gray-500">Reservations that you have attended will appear here!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock content %}

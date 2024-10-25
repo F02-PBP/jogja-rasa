@@ -8,6 +8,10 @@ from django.http import JsonResponse
 from django.db.models import Q
 from .models import UserProfile
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from reservation.models import Reservation
+from django.http import HttpResponse
+from django.core import serializers
 
 def show_landing_page(request):
     restaurants = Restaurant.objects.all()
@@ -195,3 +199,42 @@ def rekomendasi_makanan(request):
 @login_required
 def profile(request):
     return render(request, 'profile.html')
+
+def show_xml(request):
+    data = Restaurant.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Restaurant.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def show_xml_by_id(request, id):
+    data = Restaurant.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json_by_id(request, id):
+    data = Restaurant.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+@csrf_exempt
+@require_POST
+def add_reservation(request):
+    date = request.POST.get("date")
+    time = request.POST.get("time")
+    number_of_people = request.POST.get("number_of_people")
+    user = request.user
+    restaurant_id = request.POST.get("restaurantObj")
+
+    try:
+        restaurant = Restaurant.objects.get(id=restaurant_id)  # Fetch the Restaurant instance
+    except Restaurant.DoesNotExist:
+        return HttpResponse(b"Restaurant not found", status=404)
+    
+    new_reservation = Reservation(
+        date=date, time=time,
+        number_of_people=number_of_people,
+        user=user, restaurant=restaurant,
+    )
+    new_reservation.save()
+
+    return HttpResponse(b"CREATED", status=201)
