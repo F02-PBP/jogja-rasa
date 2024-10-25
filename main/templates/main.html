@@ -36,7 +36,6 @@
 
   <div class="mb-8">
     <form id="searchForm" method="GET" class="space-y-4">
-      {% csrf_token %}
       <div class="flex flex-col space-y-4">
         <div
           class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
@@ -174,8 +173,12 @@
     const foodTypeSelect = document.querySelector('select[name="food_type"]');
     const restaurantGrid = document.getElementById("restaurantGrid");
     let debounceTimer;
-
     const initialRestaurants = restaurantGrid.innerHTML;
+
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      fetchRestaurants();
+    });
 
     foodTypeSelect.addEventListener("change", function () {
       fetchRestaurants();
@@ -196,15 +199,12 @@
       fetchRestaurants();
     });
 
-    function getCsrfToken() {
-      return document.querySelector("[name=csrfmiddlewaretoken]").value;
-    }
-
     function fetchRestaurants() {
       const searchQuery = searchInput.value.trim();
       const regionValue = regionSelect.value;
       const params = new URLSearchParams();
       const foodTypeValue = foodTypeSelect.value;
+
       if (searchQuery) params.append("query", searchQuery);
       if (regionValue) params.append("region", regionValue);
       if (foodTypeValue) params.append("food_type", foodTypeValue);
@@ -217,7 +217,6 @@
       fetch(url, {
         method: "GET",
         headers: {
-          "X-CSRFToken": getCsrfToken(),
           Accept: "application/json",
           "X-Requested-With": "XMLHttpRequest",
         },
@@ -253,23 +252,23 @@
         card.className =
           "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
         card.innerHTML = `
-                <div class="p-4 flex-grow">
-                    <h2 class="text-xl font-semibold mb-2 text-navy-700">${
-                      restaurant.name
-                    }</h2>
-                    <p class="text-gray-600 mb-4">${
-                      restaurant.description.length > 100
-                        ? restaurant.description.substring(0, 97) + "..."
-                        : restaurant.description
-                    }</p>
-                </div>
-                <div class="p-4 bg-gray-50 flex justify-between items-center">
-                    <span class="text-sm text-gray-500">${
-                      restaurant.location || "Location not specified"
-                    }</span>
-                    <a href="#" class="btn-primary text-sm">Lihat Resto</a>
-                </div>
-            `;
+          <div class="p-4 flex-grow">
+            <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+              restaurant.name
+            }</h2>
+            <p class="text-gray-600 mb-4">${
+              restaurant.description.length > 100
+                ? restaurant.description.substring(0, 97) + "..."
+                : restaurant.description
+            }</p>
+          </div>
+          <div class="p-4 bg-gray-50 flex justify-between items-center">
+            <span class="text-sm text-gray-500">${
+              restaurant.location || "Location not specified"
+            }</span>
+            <a href="#" class="btn-primary text-sm">Lihat Resto</a>
+          </div>
+        `;
         restaurantGrid.appendChild(card);
       });
     }
