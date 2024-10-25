@@ -1,12 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% load static %}
 <!--Prettier-->
-{% load static %}
-<!--Prettier-->
-{% block title %}Home{% endblock title %} {% block content %}
+{% block title %}Home {% endblock title %} {% block content %}
 <!--Prettier-->
 {% include 'navbar.html' %}
 <main class="container mx-auto px-4 py-8">
-  <!-- Hero Section with Slider -->
   <div class="mb-8 overflow-hidden relative">
     <div
       x-data="{ 
@@ -37,29 +34,106 @@
     </div>
   </div>
 
-  <!-- Search Section -->
   <div class="mb-8">
-    <form id="searchForm" class="space-y-4">
-      <div
-        class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
-      >
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Cari restoran atau makanan..."
-          class="form-input w-full sm:flex-grow"
-        />
-        <button type="submit" class="btn-primary w-full sm:w-auto py-3 text-lg">
-          Cari
-        </button>
+    <form id="searchForm" method="GET" class="space-y-4">
+      {% csrf_token %}
+      <div class="flex flex-col space-y-4">
+        <div
+          class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2"
+        >
+          <input
+            type="text"
+            id="searchInput"
+            name="query"
+            placeholder="Cari restoran atau makanan..."
+            class="form-input w-full sm:flex-grow rounded-lg border-gray-300 focus:border-navy-500 focus:ring-navy-500"
+          />
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <div class="flex-1 min-w-[200px]">
+            <select
+              name="region"
+              class="form-select w-full rounded-lg border-gray-300 focus:border-navy-500 focus:ring-navy-500 text-sm"
+            >
+              <option value="">Semua Wilayah</option>
+              <option value="yogyakarta-barat">Yogyakarta Barat</option>
+              <option value="yogyakarta-timur">Yogyakarta Timur</option>
+              <option value="yogyakarta-utara">Yogyakarta Utara</option>
+              <option value="yogyakarta-selatan">Yogyakarta Selatan</option>
+              <option value="yogyakarta-pusat">Yogyakarta Pusat</option>
+              <option value="solo">Solo</option>
+            </select>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <select
+              name="food_type"
+              class="form-select w-full rounded-lg border-gray-300 focus:border-navy-500 focus:ring-navy-500 text-sm"
+            >
+              <option value="">Semua Jenis Makanan</option>
+              <option value="soto">Soto</option>
+              <option value="gudeg">Gudeg</option>
+              <option value="bakpia">Bakpia</option>
+              <option value="sate">Sate</option>
+              <option value="nasi_goreng">Nasi Goreng</option>
+              <option value="olahan_ayam">Olahan Ayam</option>
+              <option value="olahan_ikan">Olahan Ikan</option>
+              <option value="olahan_daging">Olahan Daging</option>
+              <option value="olahan_mie">Olahan Mie</option>
+              <option value="kopi">Kopi</option>
+              <option value="pencuci_mulut">Pencuci Mulut</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2" id="activeFilters"></div>
       </div>
     </form>
   </div>
 
-  <!-- Restaurant Grid -->
   <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">
     Temukan Kelezatan Kuliner Jogja
   </h1>
+
+  {% if user.is_authenticated %}
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold mb-4 text-navy-800">
+      Rekomendasi untuk Kamu
+    </h2>
+    <p class="text-gray-600 mb-4">
+      Berdasarkan preferensi {{ user.userprofile.get_interested_in_display }}:
+    </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for restaurant in recommended_restaurants %}
+      <div
+        class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full"
+      >
+        <div class="p-4 flex-grow">
+          <h2 class="text-xl font-semibold mb-2 text-navy-700">
+            {{ restaurant.name }}
+          </h2>
+          <p class="text-gray-600 mb-4">
+            {{ restaurant.description|truncatechars:100 }}
+          </p>
+        </div>
+        <div class="p-4 bg-gray-50 flex justify-between items-center">
+          <span class="text-sm text-gray-500"
+            >{{ restaurant.get_location }}</span
+          >
+          <a href="#" class="btn-primary text-sm whitespace-nowrap"
+            >Lihat Resto</a
+          >
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <p class="text-3xl font-bold mb-8 text-center text-navy-800">
+    Semua Restoran
+  </p>
+
   <div
     id="restaurantGrid"
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -77,8 +151,10 @@
         </p>
       </div>
       <div class="p-4 bg-gray-50 flex justify-between items-center">
-        <span class="text-sm text-gray-500">{{ restaurant.location }}</span>
-        <a href="#" class="btn-primary text-sm">Lihat Menu</a>
+        <span class="text-sm text-gray-500">{{ restaurant.get_location }}</span>
+        <a href="#" class="btn-primary text-sm whitespace-nowrap"
+          >Lihat Resto</a
+        >
       </div>
     </div>
     {% empty %}
@@ -94,27 +170,79 @@
   document.addEventListener("DOMContentLoaded", function () {
     const searchForm = document.getElementById("searchForm");
     const searchInput = document.getElementById("searchInput");
+    const regionSelect = document.querySelector('select[name="region"]');
+    const foodTypeSelect = document.querySelector('select[name="food_type"]');
     const restaurantGrid = document.getElementById("restaurantGrid");
+    let debounceTimer;
 
-    searchForm.addEventListener("submit", function (e) {
-      e.preventDefault();
+    const initialRestaurants = restaurantGrid.innerHTML;
+
+    foodTypeSelect.addEventListener("change", function () {
       fetchRestaurants();
     });
 
-    function fetchRestaurants() {
-      const searchQuery = searchInput.value;
-      const url = `/api/restaurants?query=${encodeURIComponent(searchQuery)}`;
+    searchInput.addEventListener("input", function () {
+      clearTimeout(debounceTimer);
+      if (!this.value.trim() && !regionSelect.value) {
+        restaurantGrid.innerHTML = initialRestaurants;
+        return;
+      }
+      debounceTimer = setTimeout(() => {
+        fetchRestaurants();
+      }, 300);
+    });
 
-      fetch(url)
-        .then((response) => response.json())
-        .then((restaurants) => displayRestaurants(restaurants))
-        .catch((error) => console.error("Error:", error));
+    regionSelect.addEventListener("change", function () {
+      fetchRestaurants();
+    });
+
+    function getCsrfToken() {
+      return document.querySelector("[name=csrfmiddlewaretoken]").value;
+    }
+
+    function fetchRestaurants() {
+      const searchQuery = searchInput.value.trim();
+      const regionValue = regionSelect.value;
+      const params = new URLSearchParams();
+      const foodTypeValue = foodTypeSelect.value;
+      if (searchQuery) params.append("query", searchQuery);
+      if (regionValue) params.append("region", regionValue);
+      if (foodTypeValue) params.append("food_type", foodTypeValue);
+
+      const url = `/search_restaurants/?${params.toString()}`;
+
+      restaurantGrid.innerHTML =
+        '<p class="col-span-3 text-center text-gray-500">Mencari...</p>';
+
+      fetch(url, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": getCsrfToken(),
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (searchQuery === searchInput.value.trim()) {
+            displayRestaurants(data.results || []);
+          }
+        })
+        .catch((error) => {
+          restaurantGrid.innerHTML =
+            '<p class="col-span-3 text-center text-red-500">Terjadi kesalahan. Silakan coba lagi.</p>';
+        });
     }
 
     function displayRestaurants(restaurants) {
       restaurantGrid.innerHTML = "";
 
-      if (restaurants.length === 0) {
+      if (!restaurants || restaurants.length === 0) {
         restaurantGrid.innerHTML =
           '<p class="col-span-3 text-center text-gray-500">Tidak ada restoran ditemukan.</p>';
         return;
@@ -125,23 +253,23 @@
         card.className =
           "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
         card.innerHTML = `
-        <div class="p-4 flex-grow">
-          <h2 class="text-xl font-semibold mb-2 text-navy-700">${
-            restaurant.name
-          }</h2>
-          <p class="text-gray-600 mb-4">${
-            restaurant.description.length > 100
-              ? restaurant.description.substring(0, 97) + "..."
-              : restaurant.description
-          }</p>
-        </div>
-        <div class="p-4 bg-gray-50 flex justify-between items-center">
-          <span class="text-sm text-gray-500">${
-            restaurant.location || "Location not specified"
-          }</span>
-          <a href="#" class="btn-primary text-sm">Lihat Menu</a>
-        </div>
-      `;
+                <div class="p-4 flex-grow">
+                    <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+                      restaurant.name
+                    }</h2>
+                    <p class="text-gray-600 mb-4">${
+                      restaurant.description.length > 100
+                        ? restaurant.description.substring(0, 97) + "..."
+                        : restaurant.description
+                    }</p>
+                </div>
+                <div class="p-4 bg-gray-50 flex justify-between items-center">
+                    <span class="text-sm text-gray-500">${
+                      restaurant.location || "Location not specified"
+                    }</span>
+                    <a href="#" class="btn-primary text-sm">Lihat Resto</a>
+                </div>
+            `;
         restaurantGrid.appendChild(card);
       });
     }
