@@ -1,6 +1,5 @@
-from django.urls import path, include
-from .views import register, login, show_landing_page, logout_user, search_restaurants
-
+from django.urls import path
+from .views import register, login, show_landing_page, logout_user, search_restaurants, rekomendasi_makanan, profile
 app_name = 'main'
 
 urlpatterns = [
@@ -8,6 +7,7 @@ urlpatterns = [
     path('register/', register, name='register'),
     path('login/', login, name='login'),
     path('logout/', logout_user, name='logout'),
-    path('api/restaurants', search_restaurants, name='search_restaurants'),
-    path('forum/', include('forum.urls', namespace='forum')),
+    path('search_restaurants/', search_restaurants, name='search_restaurants'),
+    path('get_recommendations/', rekomendasi_makanan, name='get_recommendations'),
+    path('profile/', profile, name='profile'),
 ]
