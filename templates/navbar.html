@@ -12,6 +12,7 @@
       class="h-10 transition-transform duration-300 ease-in-out hover:scale-110"
     />
   </a>
+
   <div class="lg:hidden">
     <button
       class="navbar-burger flex items-center text-gray-700 p-3 hover:text-navy-600 transition-colors duration-300 ease-in-out"
@@ -26,13 +27,14 @@
       </svg>
     </button>
   </div>
+
   <ul
     class="hidden absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 lg:flex lg:mx-auto lg:items-center lg:w-auto lg:space-x-6"
   >
     <li>
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="#"
+        href="{% url 'main:show_landing_page' %}"
         >Home</a
       >
     </li>
@@ -53,11 +55,20 @@
       </svg>
     </li>
     <li>
+      {% if user.is_authenticated %}
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="#"
+        href="/forum"
         >Forum</a
       >
+      {% else %}
+      <a
+        href="#"
+        class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out auth-required"
+      >
+        Forum
+      </a>
+      {% endif %}
     </li>
     <li class="text-gray-300">
       <svg
@@ -76,11 +87,20 @@
       </svg>
     </li>
     <li>
+      {% if user.is_authenticated %}
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="#"
+        href="/reservasi"
         >Reservasi</a
       >
+      {% else %}
+      <a
+        href="#"
+        class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out auth-required"
+      >
+        Reservasi
+      </a>
+      {% endif %}
     </li>
     <li class="text-gray-300">
       <svg
@@ -99,13 +119,23 @@
       </svg>
     </li>
     <li>
+      {% if user.is_authenticated %}
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="#"
+        href="/bookmark"
         >Bookmark</a
       >
+      {% else %}
+      <a
+        href="#"
+        class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out auth-required"
+      >
+        Bookmark
+      </a>
+      {% endif %}
     </li>
   </ul>
+
   {% if user.is_authenticated %}
   <div class="hidden lg:inline-block lg:ml-auto lg:mr-3 relative">
     <button
@@ -128,14 +158,14 @@
       class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20 hidden"
     >
       <a
-        href="#"
+        href="/profile"
         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
         >Profile</a
       >
       <a
         href="{% url 'main:logout' %}"
         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >Sign out</a
+        >Keluar</a
       >
     </div>
   </div>
@@ -143,7 +173,7 @@
   <a
     class="hidden lg:inline-block py-2 px-6 bg-navy-600 hover:bg-navy-700 text-sm text-white font-bold rounded-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
     href="{% url 'main:login' %}"
-    >Log in</a
+    >Masuk</a
   >
   {% endif %}
 </nav>
@@ -186,30 +216,57 @@
         <li class="mb-1">
           <a
             class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
-            href="#"
+            href="{% url 'main:show_landing_page' %}"
             >Home</a
           >
         </li>
         <li class="mb-1">
+          {% if user.is_authenticated %}
           <a
             class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
-            href="#"
+            href="/forum"
             >Forum</a
           >
+          {% else %}
+          <a
+            href="#"
+            class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out auth-required"
+          >
+            Forum
+          </a>
+          {% endif %}
         </li>
         <li class="mb-1">
+          {% if user.is_authenticated %}
           <a
             class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
-            href="#"
+            href="/reservasi"
             >Reservasi</a
           >
+          {% else %}
+          <a
+            href="#"
+            class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out auth-required"
+          >
+            Reservasi
+          </a>
+          {% endif %}
         </li>
         <li class="mb-1">
+          {% if user.is_authenticated %}
           <a
             class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
-            href="#"
+            href="/bookmark"
             >Bookmark</a
           >
+          {% else %}
+          <a
+            href="#"
+            class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out auth-required"
+          >
+            Bookmark
+          </a>
+          {% endif %}
         </li>
       </ul>
     </div>
@@ -234,18 +291,18 @@
         <a
           class="block px-4 py-3 mb-2 leading-loose text-xs text-center text-white font-semibold bg-navy-600 hover:bg-navy-700 rounded-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
           href="{% url 'main:logout' %}"
-          >Sign Out</a
+          >Keluar</a
         >
         {% else %}
         <a
           class="block px-4 py-3 mb-3 leading-loose text-xs text-center text-white font-semibold bg-navy-600 hover:bg-navy-700 rounded-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
           href="{% url 'main:login' %}"
-          >Log In</a
+          >Masuk</a
         >
         <a
           class="block px-4 py-3 mb-2 leading-loose text-xs text-center text-white font-semibold bg-navy-600 hover:bg-navy-700 rounded-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-md"
           href="{% url 'main:register' %}"
-          >Sign Up</a
+          >Daftar</a
         >
         {% endif %}
       </div>
@@ -253,15 +310,25 @@
   </nav>
 </div>
 
+{% include 'components/please_login_modal.html' %}
+
 <script>
+  const burger = document.querySelector(".navbar-burger");
+  const menu = document.querySelector(".navbar-menu");
+  const close = document.querySelector(".navbar-close");
+  const backdrop = document.querySelector(".navbar-backdrop");
+  const nav = document.querySelector("nav");
+  const userMenuButton = document.getElementById("userMenuButton");
+  const userMenu = document.getElementById("userMenu");
+
   document.addEventListener("DOMContentLoaded", function () {
-    const burger = document.querySelector(".navbar-burger");
-    const menu = document.querySelector(".navbar-menu");
-    const close = document.querySelector(".navbar-close");
-    const backdrop = document.querySelector(".navbar-backdrop");
-    const nav = document.querySelector("nav");
-    const userMenuButton = document.getElementById("userMenuButton");
-    const userMenu = document.getElementById("userMenu");
+    const authRequiredLinks = document.querySelectorAll(".auth-required");
+    authRequiredLinks.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.showLoginModal(e);
+      });
+    });
 
     burger.addEventListener("click", toggleMenu);
     close.addEventListener("click", toggleMenu);
@@ -296,22 +363,5 @@
         }
       });
     }
-
-    const dropdowns = document.querySelectorAll(".navbar-dropdown");
-    dropdowns.forEach((dropdown) => {
-      const trigger = dropdown.querySelector(".navbar-dropdown-trigger");
-      const content = dropdown.querySelector(".navbar-dropdown-content");
-
-      trigger.addEventListener("click", (e) => {
-        e.preventDefault();
-        content.classList.toggle("hidden");
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!dropdown.contains(e.target)) {
-          content.classList.add("hidden");
-        }
-      });
-    });
   });
 </script>
