@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Forum Home{% endblock title %}
+
+{% block content %}
+  {% include 'navbar.html' %} <!-- Navbar included only here -->
+  <div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-navy-700 mb-4">Forum JogjaRasa</h1>
+    
+    <a href="{% url 'forum:add_topic' %}" class="btn-primary">Create New Topic</a>
+
+    <ul class="mt-6">
+      {% if topics %}
+        {% for topic in topics %}
+          <li class="mb-4 p-4 bg-white rounded-lg shadow-md">
+            <a href="{% url 'forum:topic_detail' topic.id %}" class="text-lg font-semibold text-navy-600">{{ topic.title }}</a>
+            <p class="text-sm text-gray-600">By {{ topic.author.username }} on {{ topic.created_at }}</p>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li>No topics available. Be the first to <a href="{% url 'forum:add_topic' %}" class="text-navy-600">create one</a>!</li>
+      {% endif %}
+    </ul>
+  </div>
+{% endblock content %}

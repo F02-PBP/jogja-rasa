@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import register, login, show_landing_page, logout_user, search_restaurants, rekomendasi_makanan, profile
-
 app_name = 'main'
 
 urlpatterns = [
