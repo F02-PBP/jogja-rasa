@@ -23,7 +23,7 @@ def show_landing_page(request):
                 'gudeg': ['gudeg'],
                 'bakpia': ['bakpia', 'bakphia'],
                 'sate': ['sate', 'satay'],
-                'nasi_goreng': ['nasi goreng', 'nasgor'],
+                'nasi goreng': ['nasi goreng', 'nasgor'],
                 'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
                 'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
                 'olahan_mie': ['mie', 'bakmi'],
@@ -100,7 +100,7 @@ def search_restaurants(request):
             'gudeg': ['gudeg'],
             'bakpia': ['bakpia', 'bakphia'],
             'sate': ['sate', 'satay'],
-            'nasi_goreng': ['nasi goreng', 'nasgor'],
+            'nasi goreng': ['nasi goreng', 'nasgor'],
             'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
             'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
             'olahan_mie': ['mie', 'bakmi'],
@@ -143,21 +143,22 @@ def rekomendasi_makanan(request):
         return JsonResponse({'results': []})
     
     try:
-        user_profile = request.user.profile
-        interested_food = user_profile.interested_food
-
-        food_display = dict(UserProfile.interested_food)[interested_food]
+        user_profile = request.user.userprofile
+        interested_food = user_profile.interested_in
+        food_display = dict(UserProfile.FOOD_CHOICES)[interested_food]
 
         food_type_keywords = {
             'soto': ['soto', 'saoto'],
             'gudeg': ['gudeg'],
             'bakpia': ['bakpia', 'bakphia'],
             'sate': ['sate', 'satay'],
-            'nasi_goreng': ['nasi goreng', 'nasgor'],
+            'nasi goreng': ['nasi goreng', 'nasgor'], 
             'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
             'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
             'olahan_mie': ['mie', 'bakmi'],
             'kopi': ['kopi', 'coffee'],
+            'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
+            'olahan_daging': ['kambing', 'sapi', 'steak', 'burger', 'entok', 'empal'],
         }
 
         keywords = food_type_keywords.get(interested_food, [])
@@ -187,7 +188,7 @@ def rekomendasi_makanan(request):
         
         return JsonResponse({'recommendations': []})
     except Exception as e:
-        print(f"Error in get_recommendations: {e}")
+        print(f"Error in get_recommendations: {e}") 
         return JsonResponse({'recommendations': []})
     
 
