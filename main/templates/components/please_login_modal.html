@@ -1,0 +1,51 @@
+<div
+  id="pleaseLoginModal"
+  class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center"
+>
+  <div
+    class="bg-white rounded-lg p-8 max-w-md w-full mx-4 transform transition-transform duration-300 scale-95 relative"
+  >
+    <button
+      onclick="hideLoginModal()"
+      class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-300"
+      aria-label="Tutup"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        />
+      </svg>
+    </button>
+
+    <div class="text-center">
+      <h3 class="text-xl font-semibold text-gray-900 mb-4">Akses Terbatas</h3>
+      <p class="mb-6 text-gray-600">
+        Anda harus masuk terlebih dahulu untuk mengakses fitur ini. Silakan
+        daftar jika belum memiliki akun.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href="{% url 'main:login' %}"
+          class="inline-block px-6 py-2 bg-navy-600 text-white rounded-lg hover:bg-navy-700 transition-colors duration-300"
+        >
+          Masuk
+        </a>
+        <a
+          href="{% url 'main:register' %}"
+          class="inline-block px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors duration-300"
+        >
+          Daftar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
