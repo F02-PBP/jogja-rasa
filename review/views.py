@@ -37,20 +37,6 @@ def show_review(request):
 
     return render(request, "review.html", context)
 
-def calculate_rating(reviews):
-    rating = visitor = 0
-    for review in reviews:
-        rating += review.rating
-        visitor += 1
-    if visitor > 0:
-        rating /= visitor
-    return [rating, visitor]
-
-def get_rating(reviews):
-    return "{:.2f}".format(calculate_rating(reviews)[0])
-
-def get_visitor(reviews):
-    return calculate_rating(reviews)[1]
 
 @login_required(login_url='/login/')
 def show_review_more(request, id):
@@ -58,13 +44,10 @@ def show_review_more(request, id):
     restaurant = Restaurant.objects.get(pk=id)
     reviews = Review.objects.filter(restaurant=restaurant)
     users = UserProfile.objects.all()
-    rating, visitor = calculate_rating(reviews)
     
     context = {
         'user_loggedin': request.user,
         'restaurant': restaurant,
-        'rating': rating,
-        'visitor': visitor,
         'reviews': serializers.serialize('json', Review.objects.filter(restaurant=restaurant)),
         'users': serializers.serialize('json', users),
     }

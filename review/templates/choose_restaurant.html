@@ -18,7 +18,6 @@
 
 <div id="my-data"
 data-user-loggedin = "{{user_loggedin.pk}}"
-data-rating = "{{rating}}"
 create-review="{% url 'review:create_review' %}"
 data-reviews="{{ reviews }}"
 data-restaurant="{{ restaurant }}"
@@ -160,7 +159,22 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
     async function refreshPage(){
         const restaurant_info = document.getElementById('restaurant-info');
         restaurant_info.innerHTML="";
-        let avgRating = (Math.round(my_data.getAttribute('data-rating') * 100) / 100).toFixed(2)
+        
+        const reviews = await getReviews(selecteRestaurant);
+        
+        let rating = 0;
+        let visitor = 0;
+        reviews.forEach(review=>{
+            rating += review.fields.rating;
+            visitor += 1
+        });
+
+        if (visitor > 0){
+            rating = rating / visitor;
+        }
+
+        rating = (Math.round(rating * 100) / 100).toFixed(2)
+
         restaurant_info.innerHTML=`
                 <div class="title block pt-2 mb-2">
                     <h1 class="text-3xl font-bold text-navy-800 text-center">{{restaurant.name}}</h1>
@@ -168,7 +182,7 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
 
                 <div class="title block pb-2">
                     <div class="text-center mt-4"><p class="block italic text-base text-gray-500">
-                        <span class="text-gray-700">Rating ${avgRating} dari 5, berdasarkan {{visitor}} ulasan.<br></span>
+                        <span class="text-gray-700">Rating ${rating} dari 5, berdasarkan ${visitor} ulasan.<br></span>
                         "{{restaurant.description}}" <br> 📍 
                         <span class="text-gray-700">{{restaurant.latitude}}, {{restaurant.longitude}}</span>
                     </p></div>
@@ -178,7 +192,6 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
         review_container.innerHTML = "";
 
 
-        const reviews = await getReviews(selecteRestaurant);
 
         let htmlString = ``;
         
