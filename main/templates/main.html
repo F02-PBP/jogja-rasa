@@ -75,10 +75,10 @@
               <option value="bakpia">Bakpia</option>
               <option value="sate">Sate</option>
               <option value="nasi goreng">Nasi Goreng</option>
-              <option value="olahan_ayam">Olahan Ayam</option>
-              <option value="olahan_ikan">Olahan Ikan</option>
+              <option value="olahan ayam">Olahan Ayam</option>
+              <option value="olahan ikan">Olahan Ikan</option>
               <option value="olahan_daging">Olahan Daging</option>
-              <option value="olahan_mie">Olahan Mie</option>
+              <option value="olahan mie">Olahan Mie</option>
               <option value="kopi">Kopi</option>
               <option value="pencuci_mulut">Pencuci Mulut</option>
             </select>
@@ -124,19 +124,13 @@
           >
 
           {% if restaurant.is_bookmarked %}
-          <button
-            class="btn-bookmark text-sm"
-            data-id="{{ restaurant.id }}"
-          >
+          <button class="btn-bookmark text-sm" data-id="{{ restaurant.id }}">
             Remove Bookmark
           </button>
           {% else %}
-            <button
-              class="btn-bookmark text-sm"
-              data-id="{{ restaurant.id }}"
-            >
-              Add Bookmark
-            </button>
+          <button class="btn-bookmark text-sm" data-id="{{ restaurant.id }}">
+            Add Bookmark
+          </button>
           {% endif %}
         </div>
       </div>
@@ -175,35 +169,27 @@
         <a href="#" class="btn-primary text-sm whitespace-nowrap"
           >Lihat Resto</a
         >
-        {% if user.is_authenticated %}
-            {% if restaurant.is_bookmarked %}
-                <button
-                    class="btn-bookmark text-sm"
-                    data-id="{{ restaurant.id }}"
-                >
-                    Remove Bookmark
-                </button>
-            {% else %}
-                <button
-                    class="btn-bookmark text-sm"
-                    data-id="{{ restaurant.id }}"
-                >
-                    Add Bookmark
-                </button>
-            {% endif %}
+        {% if user.is_authenticated %} {% if restaurant.is_bookmarked %}
+        <button class="btn-bookmark text-sm" data-id="{{ restaurant.id }}">
+          Remove Bookmark
+        </button>
         {% else %}
-            <button
-                class="btn-bookmark text-sm auth-required"
-                data-id="{{ restaurant.id }}"
-            >
-                Add Bookmark
-            </button>
+        <button class="btn-bookmark text-sm" data-id="{{ restaurant.id }}">
+          Add Bookmark
+        </button>
+        {% endif %} {% else %}
+        <button
+          class="btn-bookmark text-sm auth-required"
+          data-id="{{ restaurant.id }}"
+        >
+          Add Bookmark
+        </button>
         {% endif %}
       </div>
     </div>
     {% empty %}
     <p class="col-span-3 text-center text-gray-500">
-    Tidak ada restoran ditemukan.
+      Tidak ada restoran ditemukan.
     </p>
     {% endfor %}
   </div>
@@ -298,14 +284,19 @@
           "bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full";
         card.innerHTML = `
           <div class="p-4 flex-grow">
-            <h2 class="text-xl font-semibold mb-2 text-navy-700">${restaurant.name}</h2>
-            <p class="text-gray-600 mb-4">${restaurant.description.length > 100
-              ? restaurant.description.substring(0, 97) + "..."
-              : restaurant.description
+            <h2 class="text-xl font-semibold mb-2 text-navy-700">${
+              restaurant.name
+            }</h2>
+            <p class="text-gray-600 mb-4">${
+              restaurant.description.length > 100
+                ? restaurant.description.substring(0, 97) + "..."
+                : restaurant.description
             }</p>
           </div>
           <div class="p-4 bg-gray-50 flex justify-between items-center">
-            <span class="text-sm text-gray-500">${restaurant.location || "Location not specified"}</span>
+            <span class="text-sm text-gray-500">${
+              restaurant.location || "Location not specified"
+            }</span>
             <button class="btn-bookmark text-sm" data-id="${restaurant.id}">
               ${restaurant.is_bookmarked ? "Remove Bookmark" : "Add Bookmark"}
             </button>
@@ -315,12 +306,12 @@
       });
     }
 
-    restaurantGrid.addEventListener('click', function(event) {
-      if (event.target && event.target.classList.contains('btn-bookmark')) {
-        const restaurantId = event.target.getAttribute('data-id');
+    restaurantGrid.addEventListener("click", function (event) {
+      if (event.target && event.target.classList.contains("btn-bookmark")) {
+        const restaurantId = event.target.getAttribute("data-id");
         const btn = event.target;
 
-        if (btn.classList.contains('auth-required')) {
+        if (btn.classList.contains("auth-required")) {
           window.showLoginModal(event);
           return;
         }
@@ -328,35 +319,35 @@
         fetch("{% url 'bookmarks:toggle_bookmark' %}", {
           method: "POST",
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': getCookie('csrftoken'),
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           body: new URLSearchParams({
-            'restaurant_id': restaurantId
+            restaurant_id: restaurantId,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.is_bookmarked) {
+              btn.textContent = "Remove Bookmark";
+            } else {
+              btn.textContent = "Add Bookmark";
+            }
           })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.is_bookmarked) {
-            btn.textContent = "Remove Bookmark";
-          } else {
-            btn.textContent = "Add Bookmark";
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Terjadi kesalahan. Silakan coba lagi.');
-        });
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan. Silakan coba lagi.");
+          });
       }
     });
 
     function getCookie(name) {
       let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
         for (let i = 0; i < cookies.length; i++) {
           const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          if (cookie.substring(0, name.length + 1) === name + "=") {
             cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
             break;
           }
@@ -365,13 +356,13 @@
       return cookieValue;
     }
 
-    const initialBookmarkButtons = document.querySelectorAll('.btn-bookmark');
-    initialBookmarkButtons.forEach(button => {
-      button.addEventListener('click', function (event) {
-        const restaurantId = this.getAttribute('data-id');
+    const initialBookmarkButtons = document.querySelectorAll(".btn-bookmark");
+    initialBookmarkButtons.forEach((button) => {
+      button.addEventListener("click", function (event) {
+        const restaurantId = this.getAttribute("data-id");
         const btn = this;
 
-        if (btn.classList.contains('auth-required')) {
+        if (btn.classList.contains("auth-required")) {
           window.showLoginModal(event);
           return;
         }
@@ -379,29 +370,28 @@
         fetch("{% url 'bookmarks:toggle_bookmark' %}", {
           method: "POST",
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'X-CSRFToken': getCookie('csrftoken'),
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken"),
           },
           body: new URLSearchParams({
-            'restaurant_id': restaurantId
+            restaurant_id: restaurantId,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.is_bookmarked) {
+              btn.textContent = "Remove Bookmark";
+            } else {
+              btn.textContent = "Add Bookmark";
+            }
           })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.is_bookmarked) {
-            btn.textContent = "Remove Bookmark";
-          } else {
-            btn.textContent = "Add Bookmark";
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Terjadi kesalahan. Silakan coba lagi.');
-        });
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan. Silakan coba lagi.");
+          });
       });
     });
   });
 </script>
-
 
 {% endblock content %}
