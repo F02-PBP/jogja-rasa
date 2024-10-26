@@ -4,12 +4,12 @@
 >
   <a
     class="text-3xl font-bold leading-none text-gray-800 transition-colors duration-300 ease-in-out"
-    href="{% url 'main:show_landing_page' %}"
+    href="{% url 'main:home' %}"
   >
     <img
       src="{% static 'images/logo.png' %}"
       alt="Logo"
-      class="h-10 transition-transform duration-300 ease-in-out hover:scale-110"
+      class="h-10 px-5 transition-transform duration-300 ease-in-out hover:scale-110"
     />
   </a>
 
@@ -34,8 +34,31 @@
     <li>
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="{% url 'main:show_landing_page' %}"
+        href="{% url 'main:home' %}"
         >Home</a
+      >
+    </li>
+    <li class="text-gray-300">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        stroke="currentColor"
+        class="w-4 h-4 current-fill"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 5v0m0 7v0m0 7v0m0-13a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+        />
+      </svg>
+    </li>
+    <li>
+      <a
+        class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
+        href="/cari-resto"
+        >Cari Resto</a
       >
     </li>
     <li class="text-gray-300">
@@ -58,7 +81,7 @@
       {% if user.is_authenticated %}
       <a
         class="text-sm text-gray-700 hover:text-navy-600 transition-colors duration-300 ease-in-out"
-        href="{% url 'forum:forum_home' %}"  
+        href="{% url 'forum:forum_home' %}"
         >Forum</a
       >
       {% else %}
@@ -186,7 +209,7 @@
     <div class="flex items-center mb-8">
       <a
         class="mr-auto text-3xl font-bold leading-none text-gray-800"
-        href="{% url 'main:show_landing_page' %}"
+        href="{% url 'main:home' %}"
       >
         <img
           src="{% static 'images/logo.png' %}"
@@ -216,8 +239,15 @@
         <li class="mb-1">
           <a
             class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
-            href="{% url 'main:show_landing_page' %}"
+            href="{% url 'main:home' %}"
             >Home</a
+          >
+        </li>
+        <li class="mb-1">
+          <a
+            class="block p-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-navy-600 rounded transition-all duration-300 ease-in-out"
+            href="/cari-resto"
+            >Cari resto</a
           >
         </li>
         <li class="mb-1">
