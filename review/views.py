@@ -76,7 +76,7 @@ def delete_review(request, id):
     restaurant_pk = review.restaurant.pk
     print(restaurant_pk)
     review.delete()
-    return HttpResponseRedirect(reverse('review:show_review'))
+    return HttpResponseRedirect(reverse('review:show_review_more', args=[restaurant_pk]))
 
 @csrf_exempt
 @require_POST
