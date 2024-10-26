@@ -12,9 +12,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.http import HttpResponseNotFound
-from restaurants.scripts import import_data
 from main.models import UserProfile
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 @login_required(login_url='/login/')
 def show_review(request):
@@ -46,6 +46,11 @@ def calculate_rating(reviews):
         rating /= visitor
     return [rating, visitor]
 
+def get_rating(reviews):
+    return "{:.2f}".format(calculate_rating(reviews)[0])
+
+def get_visitor(reviews):
+    return calculate_rating(reviews)[1]
 
 @login_required(login_url='/login/')
 def show_review_more(request, id):
@@ -56,14 +61,22 @@ def show_review_more(request, id):
     rating, visitor = calculate_rating(reviews)
     
     context = {
+        'user_loggedin': request.user,
         'restaurant': restaurant,
         'rating': rating,
         'visitor': visitor,
         'reviews': serializers.serialize('json', Review.objects.filter(restaurant=restaurant)),
         'users': serializers.serialize('json', users),
-
     }
     return render(request, 'choose_restaurant.html', context)
+
+@login_required
+def delete_review(request, id):
+    review = Review.objects.get(pk = id)
+    restaurant_pk = review.restaurant.pk
+    print(restaurant_pk)
+    review.delete()
+    return HttpResponseRedirect(reverse('review:show_review'))
 
 @csrf_exempt
 @require_POST

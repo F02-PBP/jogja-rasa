@@ -10,4 +10,5 @@ urlpatterns =[
     path('create_review/', create_review, name='create_review'),
     path('show_review/<int:id>/', show_review_more, name='show_review_more'),
     path('show_reviews_by_restaurant_json/<int:id>/', show_reviews_by_restaurant_json, name='show_reviews_by_restaurant_json'),
+    path('delete_review/<int:id>/', delete_review)
 ]

@@ -17,6 +17,7 @@
 </style>
 
 <div id="my-data"
+data-user-loggedin = "{{user_loggedin.pk}}"
 data-rating = "{{rating}}"
 create-review="{% url 'review:create_review' %}"
 data-reviews="{{ reviews }}"
@@ -120,16 +121,19 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
     document.getElementById("closeModalBtn").addEventListener("click", hideModal);
 
     function addReviewEntry(){
-        fetch(document.getElementById('my-data').getAttribute('create-review'), {
-        method: "POST",
-        body: new FormData(document.querySelector('#reviewEntryForm')),
-        })
-        .then(refreshPage)
+        if (is_valid()){
+            fetch(document.getElementById('my-data').getAttribute('create-review'), {
+            method: "POST",
+            body: new FormData(document.querySelector('#reviewEntryForm')),
+            })
+            .then(refreshPage)
 
-        document.getElementById("reviewEntryForm").reset(); 
-        document.querySelector("[data-modal-toggle='crudModal']").click();
-
-        return false;
+            document.getElementById("reviewEntryForm").reset(); 
+            document.querySelector("[data-modal-toggle='crudModal']").click();
+        }
+        else{
+            alert("Tidak dapat membuat review, periksa kembali input anda!")
+        }
     }
 
     const submitReviewButton = document.getElementById("submitReviewForm");
@@ -138,6 +142,15 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
         document.getElementById('pk_resto').value = selecteRestaurant;
         addReviewEntry();
     });
+
+    function is_valid(){
+        const rating = document.getElementById('rating').value;
+        const review = document.getElementById('review')
+        if (rating> 0 && rating <6 && review != null){
+            return true;
+        }
+        return false;
+    }
 
     
     async function getReviews(restaurant) {
@@ -176,9 +189,24 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
                     selectuser = user.fields.full_name;
                 }
             }
+            const userLoggedIn = my_data.getAttribute('data-user-loggedin')
+
             htmlString += `
 
             <div class="flex justify-center mb-6">
+            `
+            if (userLoggedIn == review.fields.user){
+                htmlString += `
+                <a href="/review/delete_review/${review.pk}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="red" rx="4" ry="4"/>
+                    <line x1="4" y1="12" x2="20" y2="12" stroke="#ffffff" stroke-width="2"/>
+                </svg>
+                </a>
+            `
+            }
+            
+            htmlString += `
                 <div class="bg-gray-300 w-3/4 h-24 flex pl-4 justify-between items-center">
                     <div class="flex flex-row">
                         <div class="idk bg-gray-100 rounded-full flex justify-center items-center">
