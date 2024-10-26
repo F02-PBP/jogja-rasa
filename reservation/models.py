@@ -18,7 +18,7 @@ class Reservation(models.Model):
         (8, '8 orang'),
     ]
 
-    reservation_id = models.CharField(max_length=5, unique=True, editable=False, default=generate_reservation_id)
+    reservation_id = models.CharField(primary_key=True, max_length=5, unique=True, editable=False, default=generate_reservation_id)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE) 
     date = models.DateField()
