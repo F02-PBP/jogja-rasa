@@ -6,27 +6,49 @@ from .forms import UserRegistrationForm, LoginForm
 from restaurants.models import Restaurant
 from django.http import JsonResponse
 from django.db.models import Q
-from geopy.distance import geodesic
-import csv
+from .models import UserProfile
+from django.contrib.auth.decorators import login_required
 
-# ini bisa diganti bebas ya
 def show_landing_page(request):
     restaurants = Restaurant.objects.all()
-    context = {
-        'can_view_restaurants': True,
-        'can_search_nearby': True,
-        'can_view_reviews': True,
-        'can_view_discussions': True,
-        'restaurants': restaurants,
-    }
+    recommended_restaurants = []
+    
     if request.user.is_authenticated:
-        context.update({
-            'can_view_personalized_info': True,
-            'can_manage_bookmarks': True,
-            'can_rate_and_review': True,
-            'can_manage_reservations': True,
-            'can_participate_in_forum': True,
-        })
+        try:
+            user_profile = request.user.userprofile
+            interested_food = user_profile.interested_in
+            
+            food_type_keywords = {
+                'soto': ['soto', 'saoto'],
+                'gudeg': ['gudeg'],
+                'bakpia': ['bakpia', 'bakphia'],
+                'sate': ['sate', 'satay'],
+                'nasi goreng': ['nasi goreng', 'nasgor'],
+                'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+                'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+                'olahan_mie': ['mie', 'bakmi'],
+                'kopi': ['kopi', 'coffee'],
+                'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
+                'olahan_daging': ['kambing', 'sapi' 'steak', 'burger', 'entok', 'empal'],
+            }
+            
+            keywords = food_type_keywords.get(interested_food, [])
+            if keywords:
+                keyword_queries = Q()
+                for keyword in keywords:
+                    keyword_queries |= (
+                        Q(name__icontains=keyword) |
+                        Q(description__icontains=keyword)
+                    )
+                recommended_restaurants = Restaurant.objects.filter(keyword_queries)[:3]
+        except Exception as e:
+            print(f"Error getting recommendations: {e}")
+            recommended_restaurants = []
+
+    context = {
+        'restaurants': restaurants,
+        'recommended_restaurants': recommended_restaurants,
+    }
     return render(request, 'main.html', context)
 
 @csrf_exempt
@@ -35,7 +57,7 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Account created successfully. You can now log in.')
+            messages.success(request, 'Akun berhasil dibuat. Silakan login.')
             return redirect('main:show_landing_page') 
     else:
         form = UserRegistrationForm()
@@ -48,10 +70,10 @@ def login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
-            messages.success(request, 'You have successfully logged in.')
+            messages.success(request, 'Anda berhasil login.')
             return redirect('main:show_landing_page') 
         else:
-            messages.error(request, 'Invalid email or password. Please try again.')
+            messages.error(request, 'Email atau password salah. Silakan coba lagi.')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
@@ -61,20 +83,115 @@ def logout_user(request):
     return redirect('main:show_landing_page') 
 
 def search_restaurants(request):
-    query = request.GET.get('query', '')
-    
+    query = request.GET.get('query', '').strip()
+    region = request.GET.get('region', '').strip()
+    food_type = request.GET.get('food_type', '').strip()
     restaurants = Restaurant.objects.all()
-    
+
     if query:
         restaurants = restaurants.filter(
-            Q(name__icontains=query) | 
+            Q(name__icontains=query) |
             Q(description__icontains=query)
         )
 
-    data = [{
+    if food_type:
+        food_type_keywords = {
+            'soto': ['soto', 'saoto'],
+            'gudeg': ['gudeg'],
+            'bakpia': ['bakpia', 'bakphia'],
+            'sate': ['sate', 'satay'],
+            'nasi goreng': ['nasi goreng', 'nasgor'],
+            'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+            'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+            'olahan_mie': ['mie', 'bakmi'],
+            'kopi': ['kopi', 'coffee'],
+            'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
+            'olahan_daging': ['kambing', 'sapi' 'steak', 'burger', 'entok', 'empal'],
+        }
+        
+        keywords = food_type_keywords.get(food_type, [])
+        if keywords:
+            keyword_queries = Q()
+            for keyword in keywords:
+                keyword_queries |= (
+                    Q(name__icontains=keyword) |
+                    Q(description__icontains=keyword)
+                )
+            restaurants = restaurants.filter(keyword_queries)
+
+    if region:
+        region_display = region.replace('-', ' ').title()
+        filtered_restaurants = [
+            r for r in restaurants
+            if r.get_location().lower() == region_display.lower()
+        ]
+        restaurants = filtered_restaurants
+
+    results = [{
+        'id': restaurant.id,
         'name': restaurant.name,
         'description': restaurant.description,
-        'location': restaurant.location if hasattr(restaurant, 'location') else None
+        'location': restaurant.get_location(),
+        'longitude': restaurant.longitude,
+        'latitude': restaurant.latitude
     } for restaurant in restaurants]
 
-    return JsonResponse(data, safe=False)
+    return JsonResponse({'results': results})
+
+def rekomendasi_makanan(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'results': []})
+    
+    try:
+        user_profile = request.user.userprofile
+        interested_food = user_profile.interested_in
+        food_display = dict(UserProfile.FOOD_CHOICES)[interested_food]
+
+        food_type_keywords = {
+            'soto': ['soto', 'saoto'],
+            'gudeg': ['gudeg'],
+            'bakpia': ['bakpia', 'bakphia'],
+            'sate': ['sate', 'satay'],
+            'nasi goreng': ['nasi goreng', 'nasgor'], 
+            'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+            'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+            'olahan_mie': ['mie', 'bakmi'],
+            'kopi': ['kopi', 'coffee'],
+            'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
+            'olahan_daging': ['kambing', 'sapi', 'steak', 'burger', 'entok', 'empal'],
+        }
+
+        keywords = food_type_keywords.get(interested_food, [])
+
+        if keywords:
+            keyword_queries = Q()
+            for keyword in keywords:
+                keyword_queries |= (
+                    Q(name__icontains=keyword) |
+                    Q(description__icontains=keyword)
+                )
+            recommended_restaurants = Restaurant.objects.filter(keyword_queries)[:3]
+            
+            recommendations = [{
+                'id': restaurant.id,
+                'name': restaurant.name,
+                'description': restaurant.description,
+                'location': restaurant.get_location(),
+                'longitude': restaurant.longitude,
+                'latitude': restaurant.latitude
+            } for restaurant in recommended_restaurants]
+            
+            return JsonResponse({
+                'recommendations': recommendations,
+                'interested_food': food_display
+            })
+        
+        return JsonResponse({'recommendations': []})
+    except Exception as e:
+        print(f"Error in get_recommendations: {e}") 
+        return JsonResponse({'recommendations': []})
+    
+
+@login_required
+def profile(request):
+    return render(request, 'profile.html')

@@ -14,6 +14,109 @@
     <title>{% block title %}{% endblock title %} - JogjaRasa</title>
   </head>
   <body>
-    {% block content %} {% endblock content %}
+    {% if messages %}
+    <div
+      class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md"
+      x-data="{ show: true }"
+      x-show="show"
+    >
+      {% for message in messages %}
+      <div
+        class="{% if message.tags == 'error' %}from-red-500 to-pink-500{% else %}from-emerald-500 to-teal-500{% endif %} bg-gradient-to-r text-white p-4 rounded-lg shadow-xl backdrop-blur-md bg-opacity-90 mb-4 border border-white/20 flex items-center justify-between transform transition-all duration-500 ease-out hover:scale-105"
+        role="alert"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-300 transform"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-2"
+      >
+        <div class="flex items-center space-x-3">
+          {% if message.tags == 'error' %}
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          {% else %}
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          {% endif %}
+          <span class="font-medium">{{ message }}</span>
+        </div>
+        <button
+          @click="show = false"
+          class="ml-4 text-white/80 hover:text-white transition-colors duration-200 rounded-lg hover:bg-white/20 p-1"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <style>
+      [role="alert"] {
+        animation: slideIn 0.5s ease-out forwards;
+      }
+
+      @keyframes slideIn {
+        0% {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(function () {
+          const messages = document.querySelectorAll('[role="alert"]');
+          messages.forEach(function (message) {
+            message.style.transform = "translateY(-20px)";
+            message.style.opacity = "0";
+            message.style.transition = "all 0.5s ease-out";
+            setTimeout(function () {
+              message.remove();
+            }, 500);
+          });
+        }, 4000);
+      });
+    </script>
+    {% endif %} {% block content %} {% endblock content %}
   </body>
 </html>
