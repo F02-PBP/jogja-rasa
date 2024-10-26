@@ -1,10 +1,11 @@
 from django.urls import path
-from .views import register, login, show_landing_page, logout_user, search_restaurants, rekomendasi_makanan, profile
+from .views import register, login, show_landing_page, logout_user, search_restaurants, rekomendasi_makanan, profile, home
 from bookmarks import views
 app_name = 'main'
 
 urlpatterns = [
-    path('', show_landing_page, name='show_landing_page'),
+    path('', home, name='home'),
+    path('cari-resto/', show_landing_page, name='cari-resto'),
     path('register/', register, name='register'),
     path('login/', login, name='login'),
     path('logout/', logout_user, name='logout'),
