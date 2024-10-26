@@ -10,6 +10,9 @@ from .models import UserProfile
 from django.contrib.auth.decorators import login_required
 from bookmarks.models import Bookmark
 
+def home(request):
+    return render(request, 'home.html')
+
 def show_landing_page(request):
     restaurants = Restaurant.objects.all()
     recommended_restaurants = []
@@ -26,9 +29,9 @@ def show_landing_page(request):
                 'bakpia': ['bakpia', 'bakphia'],
                 'sate': ['sate', 'satay'],
                 'nasi goreng': ['nasi goreng', 'nasgor'],
-                'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
-                'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
-                'olahan_mie': ['mie', 'bakmi'],
+                'olahan ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+                'olahan ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+                'olahan mie': ['mie', 'bakmi'],
                 'kopi': ['kopi', 'coffee'],
                 'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
                 'olahan_daging': ['kambing', 'sapi', 'steak', 'burger', 'entok', 'empal'],
@@ -70,7 +73,9 @@ def register(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Akun berhasil dibuat. Silakan login.')
-            return redirect('main:show_landing_page') 
+            return redirect('main:home') 
+        else:
+            messages.error(request, 'Terjadi kesalahan. Silakan coba lagi.')
     else:
         form = UserRegistrationForm()
     return render(request, 'register.html', {'form': form})
@@ -83,7 +88,7 @@ def login(request):
             user = form.get_user()
             auth_login(request, user)
             messages.success(request, 'Anda berhasil login.')
-            return redirect('main:show_landing_page') 
+            return redirect('main:home') 
         else:
             messages.error(request, 'Email atau password salah. Silakan coba lagi.')
     else:
@@ -92,7 +97,7 @@ def login(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('main:show_landing_page') 
+    return redirect('main:home') 
 
 def search_restaurants(request):
     query = request.GET.get('query', '').strip()
@@ -113,9 +118,9 @@ def search_restaurants(request):
             'bakpia': ['bakpia', 'bakphia'],
             'sate': ['sate', 'satay'],
             'nasi goreng': ['nasi goreng', 'nasgor'],
-            'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
-            'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
-            'olahan_mie': ['mie', 'bakmi'],
+            'olahan ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+            'olahan ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+            'olahan mie': ['mie', 'bakmi'],
             'kopi': ['kopi', 'coffee'],
             'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
             'olahan_daging': ['kambing', 'sapi' 'steak', 'burger', 'entok', 'empal'],
@@ -171,9 +176,9 @@ def rekomendasi_makanan(request):
             'bakpia': ['bakpia', 'bakphia'],
             'sate': ['sate', 'satay'],
             'nasi goreng': ['nasi goreng', 'nasgor'], 
-            'olahan_ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
-            'olahan_ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
-            'olahan_mie': ['mie', 'bakmi'],
+            'olahan ayam': ['ayam', 'chicken', 'angkringan', 'oseng', 'sego koyor'],
+            'olahan ikan': ['lele', 'mangut', 'teri', 'udang', 'kepala ikan'],
+            'olahan mie': ['mie', 'bakmi'],
             'kopi': ['kopi', 'coffee'],
             'pencuci_mulut': ['es campur', 'es buah', 'es duren', 'pukis', 'es krim', 'rujak', 'ronde', 'lupis', 'jamu', 'hidangan tahu', 'lapis legit', 'martabak'],
             'olahan_daging': ['kambing', 'sapi', 'steak', 'burger', 'entok', 'empal'],
