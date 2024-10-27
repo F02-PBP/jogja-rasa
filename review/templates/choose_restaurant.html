@@ -121,7 +121,7 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
 
     function addReviewEntry(){
         if (is_valid()){
-            fetch(document.getElementById('my-data').getAttribute('create-review'), {
+            fetch(my_data.getAttribute('create-review'), {
             method: "POST",
             body: new FormData(document.querySelector('#reviewEntryForm')),
             })
@@ -144,7 +144,7 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
 
     function is_valid(){
         const rating = document.getElementById('rating').value;
-        const review = document.getElementById('review')
+        const review = document.getElementById('review').value;
         if (rating> 0 && rating <6 && review != null){
             return true;
         }

@@ -1,174 +1,271 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block meta %}
+{% extends 'base.html' %} {% load static %} {% block meta %}
 <title>Reservation</title>
-<meta name="csrf-token" content="{{ csrf_token }}">
+<meta name="csrf-token" content="{{ csrf_token }}" />
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
-{% endblock meta %}
+{% endblock meta %} {% block content %} {% include 'navbar.html' %}
 
-{% block content %}
-{% include 'navbar.html' %}
+<div
+  class="overflow-x-hidden px-4 md:px-8 py-14 min-h-screen bg-gray-100 flex justify-center"
+>
+  <div class="p-2 relative w-full max-w-3xl">
+    <div class="p-8 bg-white shadow-md rounded-xl">
+      <h1 class="text-2xl font-bold mb-6">My Reservations</h1>
 
-<div class="overflow-x-hidden px-4 md:px-8 py-14 min-h-screen bg-gray-100 flex justify-center">
-    <div class="p-2 relative w-full max-w-3xl">
-        <div class="p-8 bg-white shadow-md rounded-xl">
-            <h1 class="text-2xl font-bold mb-6">My Reservations</h1>
+      <!-- Upcoming Reservations Section -->
+      <div class="mb-10">
+        <h2 class="text-xl font-semibold mb-4">Upcoming Reservations</h2>
+        <div id="reservation_cards"></div>
+      </div>
 
-            <!-- Upcoming Reservations Section -->
-            <div class="mb-10">
-                <h2 class="text-xl font-semibold mb-4">Upcoming Reservations</h2>
-                <div id="reservation_cards"></div>
-            </div>
+      <hr class="border-gray-300 mb-10" />
 
-            <hr class="border-gray-300 mb-10">
-
-            <!-- Past Reservations Section -->
-            <div>
-                <h2 class="text-xl font-semibold mb-4">Past Reservations</h2>
-                <div class="text-gray-500">Reservations that you have attended will appear here!</div>
-            </div>
+      <!-- Past Reservations Section -->
+      <div>
+        <h2 class="text-xl font-semibold mb-4">Past Reservations</h2>
+        <div class="text-gray-500">
+          Reservations that you have attended will appear here!
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<div id="crudModal" tabindex="-1" aria-hidden="true"
-    class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-hidden transition-opacity duration-300 ease-out">
-    <div id="crudModalContent"
-        class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
-
-        <!-- Modal header -->
-        <div class="flex items-center justify-between p-4 border-b rounded-t">
-            <h3 class="text-xl font-brown font-bold text-gray-900">
-                Konfirmasi Penghapusan
-            </h3>
-            <button type="button"
-                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-                id="closeModalBtn">
-                <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                <span class="sr-only">Close modal</span>
-            </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="px-6 py-4 space-y-6 form-style">
-            <div id="deleteConfirmation">
-                <div class="mb-4">
-                    <div for="confirmation" class="block text-md font-brown text-gray-700">
-                        Apakah Anda yakin untuk menghapus reservasi ini?
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- Modal footer -->
-        <div
-            class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
-            <button type="button" class="rounded-lg bg-gray-400 hover:bg-gray-500 text-white font-brown py-2 px-4"
-                id="cancelButton">Tidak</button>
-            <button type="button" id="deleteReservation"
-                class="rounded-lg bg-red-600 hover:bg-red-700 text-white font-brown py-2 px-4">Ya</button>
-        </div>
+<div
+  id="crudModal"
+  tabindex="-1"
+  aria-hidden="true"
+  class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-hidden transition-opacity duration-300 ease-out"
+>
+  <div
+    id="crudModalContent"
+    class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out"
+  >
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b rounded-t">
+      <h3 class="text-xl font-brown font-bold text-gray-900">
+        Konfirmasi Penghapusan
+      </h3>
+      <button
+        type="button"
+        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+        id="closeModalBtn"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
     </div>
+
+    <!-- Modal body -->
+    <div class="px-6 py-4 space-y-6 form-style">
+      <div id="deleteConfirmation">
+        <div class="mb-4">
+          <div
+            for="confirmation"
+            class="block text-md font-brown text-gray-700"
+          >
+            <label> Apakah Anda yakin untuk menghapus reservasi ini? </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal footer -->
+    <div
+      class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end"
+    >
+      <button
+        type="button"
+        class="rounded-lg bg-gray-400 hover:bg-gray-500 text-white font-brown py-2 px-4"
+        id="cancelButton"
+      >
+        Tidak
+      </button>
+      <button
+        type="button"
+        id="deleteReservation"
+        class="rounded-lg bg-red-600 hover:bg-red-700 text-white font-brown py-2 px-4"
+      >
+        Ya
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Structure -->
-<div id="crudModalEdit" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-hidden transition-opacity duration-300 ease-out">
-    <div id="crudModalContentEdit" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
-      <!-- Modal header -->
-      <div class="flex items-center justify-between p-4 border-b rounded-t">
-        <h3 class="text-xl font-brown font-bold text-gray-900">Edit Reservasi</h3>
-        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="closeModalButtonEdit">
-          <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
-  
-      <!-- Modal body -->
-      <div class="px-6 py-4 space-y-6 form-style">
-        <form id="editForm">
-          <!-- Reservation Form Fields -->
-          <input type="hidden" id="restaurantObj" name="restaurantObj" required readonly>
-  
-          <div class="mb-4">
-            <label for="date" class="block text-sm font-brown text-gray-700">Tanggal</label>
-            <input type="date" id="date" name="date" class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10" required>
-          </div>
-  
-          <div class="mb-4">
-            <label for="time" class="block text-sm font-brown text-gray-700">Waktu</label>
-            <select id="time" name="time" class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10" required>
-              <option value="" disabled selected>Pilih waktu</option>
-            </select>
-          </div>
-  
-          <div class="mb-4">
-            <label for="number_of_people" class="block text-sm font-brown text-gray-700">Banyaknya Orang</label>
-            <select id="number_of_people" name="number_of_people" class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10" required>
-              <option value="">Pilih banyaknya orang</option>
-              <option value="1">1 orang</option>
-              <option value="2">2 orang</option>
-              <option value="3">3 orang</option>
-              <option value="4">4 orang</option>
-              <option value="5">5 orang</option>
-              <option value="6">6 orang</option>
-              <option value="7">7 orang</option>
-              <option value="8">8 orang</option>
-            </select>
-          </div>        
-        </form>
-      </div>
-  
-      <!-- Modal footer -->
-      <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
-        <button type="button" class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-md" id="cancelButtonEdit">Cancel</button>
-        <button type="submit" id="editReservation" form="editForm" class="bg-navy-600 hover:bg-navy-800 text-white py-2 px-4 rounded-md">Edit</button>
-      </div>
+<div
+  id="crudModalEdit"
+  tabindex="-1"
+  aria-hidden="true"
+  class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-hidden transition-opacity duration-300 ease-out"
+>
+  <div
+    id="crudModalContentEdit"
+    class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out"
+  >
+    <!-- Modal header -->
+    <div class="flex items-center justify-between p-4 border-b rounded-t">
+      <h3 class="text-xl font-brown font-bold text-gray-900">Edit Reservasi</h3>
+      <button
+        type="button"
+        class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
+        id="closeModalButtonEdit"
+      >
+        <svg
+          aria-hidden="true"
+          class="w-5 h-5"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="sr-only">Close modal</span>
+      </button>
     </div>
+
+    <!-- Modal body -->
+    <div class="px-6 py-4 space-y-6 form-style">
+      <form id="editForm">
+        <!-- Reservation Form Fields -->
+        <input
+          type="hidden"
+          id="restaurantObj"
+          name="restaurantObj"
+          required
+          readonly
+        />
+
+        <div class="mb-4">
+          <label for="date" class="block text-sm font-brown text-gray-700"
+            >Tanggal</label
+          >
+          <input
+            type="date"
+            id="date"
+            name="date"
+            class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10"
+            required
+          />
+        </div>
+
+        <div class="mb-4">
+          <label for="time" class="block text-sm font-brown text-gray-700"
+            >Waktu</label
+          >
+          <select
+            id="time"
+            name="time"
+            class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10"
+            required
+          >
+            <option value="" disabled selected>Pilih waktu</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label
+            for="number_of_people"
+            class="block text-sm font-brown text-gray-700"
+            >Banyaknya Orang</label
+          >
+          <select
+            id="number_of_people"
+            name="number_of_people"
+            class="mt-1 block w-full border border-gray-300 p-2 focus:outline-none focus:ring-black focus:border-black focus:z-10"
+            required
+          >
+            <option value="">Pilih banyaknya orang</option>
+            <option value="1">1 orang</option>
+            <option value="2">2 orang</option>
+            <option value="3">3 orang</option>
+            <option value="4">4 orang</option>
+            <option value="5">5 orang</option>
+            <option value="6">6 orang</option>
+            <option value="7">7 orang</option>
+            <option value="8">8 orang</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal footer -->
+    <div
+      class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end"
+    >
+      <button
+        type="button"
+        class="bg-gray-400 hover:bg-gray-500 text-white py-2 px-4 rounded-md"
+        id="cancelButtonEdit"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        id="editReservation"
+        form="editForm"
+        class="bg-navy-600 hover:bg-navy-800 text-white py-2 px-4 rounded-md"
+      >
+        Edit
+      </button>
+    </div>
+  </div>
 </div>
 
 {% include 'footer.html' %}
 
-<script >
-    
-    async function getReservation() {
-        return fetch("{% url 'reservation:show_json' %}").then((res) => res.json())
-    }
+<script>
+  async function getReservation() {
+    return fetch("{% url 'reservation:show_json' %}").then((res) => res.json());
+  }
 
-    async function refreshReservations() {
-        document.getElementById("reservation_cards").innerHTML = "";
-        document.getElementById("reservation_cards").className = "";
-        const reservationEntries = await getReservation();
-        let htmlString = "";
-        let classNameString = "";
+  async function refreshReservations() {
+    document.getElementById("reservation_cards").innerHTML = "";
+    document.getElementById("reservation_cards").className = "";
+    const reservationEntries = await getReservation();
+    let htmlString = "";
+    let classNameString = "";
 
-        if (reservationEntries.length == 0) {
-            classNameString = "ftext-gray-500 mb-4";
-            htmlString = `
+    if (reservationEntries.length == 0) {
+      classNameString = "ftext-gray-500 mb-4";
+      htmlString = `
     <div class="text-gray-500 mb-4">No reservations</div>
-    <a href="{% url 'main:home' %}" class="text-blue-500 hover:underline">Klik di sini untuk membuat reservasi!</a>
+    <a href="/cari-resto" class="text-blue-500 hover:underline">Klik di sini untuk membuat reservasi!</a>
     `;
-        } else {
-            classNameString = "gap-6 space-y-6 w-full";
-            reservationEntries.forEach((item) => {
-                const { restaurant, reservation_id, date, time, number_of_people } = item.fields;
-                
-                const dateObj = new Date(date);
-                const options = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
-                const formattedDate = dateObj.toLocaleDateString('en-US', options);
+    } else {
+      classNameString = "gap-6 space-y-6 w-full";
+      reservationEntries.forEach((item) => {
+        const { restaurant, reservation_id, date, time, number_of_people } =
+          item.fields;
 
-                const parts = time.split(':');
-                const formattedTime = `${parts[0]}:${parts[1]}`;
-                
-                htmlString += `
+        const dateObj = new Date(date);
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        };
+        const formattedDate = dateObj.toLocaleDateString("en-US", options);
+
+        const parts = time.split(":");
+        const formattedTime = `${parts[0]}:${parts[1]}`;
+
+        htmlString += `
         <div id="reservation-${reservation_id}" class="bg-white shadow-md rounded-lg px-5 py-3 w-full">
             <div class="flex justify-between items-center">
                 <h3 class="text-md font-semibold">${restaurant.name}</h3>
@@ -192,153 +289,168 @@
             </div>
         </div>
         `;
-            });
-        }
-        document.getElementById("reservation_cards").className = classNameString;
-        document.getElementById("reservation_cards").innerHTML = htmlString;
+      });
     }
-    refreshReservations();
+    document.getElementById("reservation_cards").className = classNameString;
+    document.getElementById("reservation_cards").innerHTML = htmlString;
+  }
+  refreshReservations();
 
-    const modal = document.getElementById('crudModal');
-    const modalContent = document.getElementById('crudModalContent');
+  const modal = document.getElementById("crudModal");
+  const modalContent = document.getElementById("crudModalContent");
 
-    function showModal(reservationId) {
-        const modal = document.getElementById('crudModal');
-        const modalContent = document.getElementById('crudModalContent');
+  function showModal(reservationId) {
+    const modal = document.getElementById("crudModal");
+    const modalContent = document.getElementById("crudModalContent");
 
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('opacity-0', 'scale-95');
-            modalContent.classList.add('opacity-100', 'scale-100');
-        }, 50);
-        document.getElementById('deleteReservation').setAttribute('data-id', reservationId);
-    }
+    modal.classList.remove("hidden");
+    setTimeout(() => {
+      modalContent.classList.remove("opacity-0", "scale-95");
+      modalContent.classList.add("opacity-100", "scale-100");
+    }, 50);
+    document
+      .getElementById("deleteReservation")
+      .setAttribute("data-id", reservationId);
+  }
 
-    function hideModal() {
-        const modal = document.getElementById('crudModal');
-        const modalContent = document.getElementById('crudModalContent');
+  function hideModal() {
+    const modal = document.getElementById("crudModal");
+    const modalContent = document.getElementById("crudModalContent");
 
-        modalContent.classList.remove('opacity-100', 'scale-100');
-        modalContent.classList.add('opacity-0', 'scale-95');
+    modalContent.classList.remove("opacity-100", "scale-100");
+    modalContent.classList.add("opacity-0", "scale-95");
 
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 150);
-    }
+    setTimeout(() => {
+      modal.classList.add("hidden");
+    }, 150);
+  }
 
-    document.getElementById("cancelButton").addEventListener("click", hideModal);
-    document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+  document.getElementById("cancelButton").addEventListener("click", hideModal);
+  document.getElementById("closeModalBtn").addEventListener("click", hideModal);
 
-    document.getElementById('deleteReservation').addEventListener('click', async function () {
-        const reservationId = this.getAttribute('data-id');
+  document
+    .getElementById("deleteReservation")
+    .addEventListener("click", async function () {
+      const reservationId = this.getAttribute("data-id");
 
-            const csrfToken = "{{ csrf_token }}";  // Ensure CSRF token is available
+      const csrfToken = "{{ csrf_token }}"; // Ensure CSRF token is available
 
-        const response = await fetch(`/reservasi/delete/${reservationId}/`, {
-            method: "DELETE",
-            headers: {
-                    "X-CSRFToken": csrfToken,
-                    "X-Requested-With": "XMLHttpRequest",
-                },
-            });
+      const response = await fetch(`/reservasi/delete/${reservationId}/`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (result.success) {
-            alert('Reservation deleted successfully');
-            hideModal();
+      if (result.success) {
+        alert("Reservation deleted successfully");
+        hideModal();
 
-            // Remove the reservation card from the DOM
-            document.querySelector(`#reservation-${reservationId}`).remove();
-        } else {
-            alert('Error deleting reservation');
-        }
+        // Remove the reservation card from the DOM
+        document.querySelector(`#reservation-${reservationId}`).remove();
+      } else {
+        alert("Error deleting reservation");
+      }
     });
 
-    const modalEdit = document.getElementById('crudModalEdit');
-    const modalContentEdit = document.getElementById('crudModalContentEdit');
+  const modalEdit = document.getElementById("crudModalEdit");
+  const modalContentEdit = document.getElementById("crudModalContentEdit");
 
-    function showModalEdit(reservationId) {
-        const modalEdit = document.getElementById('crudModalEdit');
-        const modalContentEdit = document.getElementById('crudModalContentEdit');
+  function showModalEdit(reservationId) {
+    const modalEdit = document.getElementById("crudModalEdit");
+    const modalContentEdit = document.getElementById("crudModalContentEdit");
 
-        modalEdit.classList.remove('hidden');
-        setTimeout(() => {
-            modalContentEdit.classList.remove('opacity-0', 'scale-95');
-            modalContentEdit.classList.add('opacity-100', 'scale-100');
-        }, 50);
-        document.getElementById('editReservation').setAttribute('data-id', reservationId);
-    }
+    modalEdit.classList.remove("hidden");
+    setTimeout(() => {
+      modalContentEdit.classList.remove("opacity-0", "scale-95");
+      modalContentEdit.classList.add("opacity-100", "scale-100");
+    }, 50);
+    document
+      .getElementById("editReservation")
+      .setAttribute("data-id", reservationId);
+  }
 
-    function hideModalEdit() {
-        const modalEdit = document.getElementById('crudModalEdit');
-        const modalContentEdit = document.getElementById('crudModalContentEdit');
+  function hideModalEdit() {
+    const modalEdit = document.getElementById("crudModalEdit");
+    const modalContentEdit = document.getElementById("crudModalContentEdit");
 
-        modalContentEdit.classList.remove('opacity-100', 'scale-100');
-        modalContentEdit.classList.add('opacity-0', 'scale-95');
+    modalContentEdit.classList.remove("opacity-100", "scale-100");
+    modalContentEdit.classList.add("opacity-0", "scale-95");
 
-        setTimeout(() => {
-            modalEdit.classList.add('hidden');
-        }, 150);
-    }
+    setTimeout(() => {
+      modalEdit.classList.add("hidden");
+    }, 150);
+  }
 
-    document.getElementById("cancelButtonEdit").addEventListener("click", hideModalEdit);
-    document.getElementById("closeModalButtonEdit").addEventListener("click", hideModalEdit);
+  document
+    .getElementById("cancelButtonEdit")
+    .addEventListener("click", hideModalEdit);
+  document
+    .getElementById("closeModalButtonEdit")
+    .addEventListener("click", hideModalEdit);
 
-    document.getElementById('editReservation').addEventListener('click', async function () {
-        event.preventDefault();
+  document
+    .getElementById("editReservation")
+    .addEventListener("click", async function () {
+      event.preventDefault();
 
-        const reservationId = this.getAttribute('data-id');
-        const csrfToken = "{{ csrf_token }}";  // Ensure CSRF token is available
+      const reservationId = this.getAttribute("data-id");
+      const csrfToken = "{{ csrf_token }}"; // Ensure CSRF token is available
 
-        // Get the updated data from the form
-        const date = document.getElementById('date').value;
-        const time = document.getElementById('time').value;
-        const number_of_people = document.getElementById('number_of_people').value;
+      // Get the updated data from the form
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const number_of_people =
+        document.getElementById("number_of_people").value;
 
-        // Send the updated data to the server
-        const response = await fetch(`/reservasi/edit/${reservationId}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "X-Requested-With": "XMLHttpRequest",
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                date: date,
-                time: time,
-                number_of_people: number_of_people,
-            }),
-        });
+      // Send the updated data to the server
+      const response = await fetch(`/reservasi/edit/${reservationId}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: date,
+          time: time,
+          number_of_people: number_of_people,
+        }),
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (result.success) {
-            alert('Reservation updated successfully');
-            hideModalEdit();
-            refreshReservations();
-        } else {
-            alert('Error updating reservation');
-        }
+      if (result.success) {
+        alert("Reservation updated successfully");
+        hideModalEdit();
+        refreshReservations();
+      } else {
+        alert("Error updating reservation");
+      }
     });
 
-    const selectElement = document.getElementById('time');
-    const startTime = 9; // jam mulai
-    const endTime = 20; // jam selesai
+  const selectElement = document.getElementById("time");
+  const startTime = 9; // jam mulai
+  const endTime = 20; // jam selesai
 
-    for (let hour = startTime; hour <= endTime; hour++) {
-        for (let minute = 0; minute < 60; minute += 30) {
-            if (hour === endTime && minute === 30) {
-                break;
-            }
-            const value = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = value;
-            selectElement.appendChild(option);
-        }
+  for (let hour = startTime; hour <= endTime; hour++) {
+    for (let minute = 0; minute < 60; minute += 30) {
+      if (hour === endTime && minute === 30) {
+        break;
+      }
+      const value = `${String(hour).padStart(2, "0")}:${String(minute).padStart(
+        2,
+        "0"
+      )}`;
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      selectElement.appendChild(option);
     }
-
+  }
 </script>
 
 {% endblock content %}
