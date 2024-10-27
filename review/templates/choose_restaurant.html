@@ -184,7 +184,7 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
                     <div class="text-center mt-4"><p class="block italic text-base text-gray-500">
                         <span class="text-gray-700">Rating ${rating} dari 5, berdasarkan ${visitor} ulasan.<br></span>
                         "{{restaurant.description}}" <br> 📍 
-                        <span class="text-gray-700">{{restaurant.latitude}}, {{restaurant.longitude}}</span>
+                        <span class="text-gray-700">{{restaurant.get_location}}</span>
                     </p></div>
                 </div>
                 `;
