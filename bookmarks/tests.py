@@ -261,13 +261,14 @@ class BookmarkTestCase(TestCase):
         response = self.client1.get(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 405)  # Method Not Allowed
 
+    def test_get_location_default(self):
+        """Test bahwa get_location mengembalikan 'Yogyakarta Barat' jika koordinat tidak sesuai kondisi."""
+        restaurant = self.restaurant4  # longitude=109.00, latitude=-7.70
+        self.assertEqual(restaurant.get_location(), "Yogyakarta Barat")
+        
     def test_bookmark_str(self):
         """Test __str__ method of Bookmark model."""
         bookmark = Bookmark.objects.create(user=self.user1, restaurant=self.restaurant1)
         expected_str = f"{self.user1.username} bookmarks {self.restaurant1.name}"
         self.assertEqual(str(bookmark), expected_str)
 
-    def test_get_location_default(self):
-        """Test bahwa get_location mengembalikan 'Yogyakarta Barat' jika koordinat tidak sesuai kondisi."""
-        restaurant = self.restaurant4  # longitude=109.00, latitude=-7.70
-        self.assertEqual(restaurant.get_location(), "Yogyakarta Barat")
