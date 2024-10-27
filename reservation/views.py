@@ -28,16 +28,22 @@ def delete_reservation(request, id):
         return JsonResponse({'success': False, 'message': 'Reservation not found.'})
     
 @csrf_exempt
-def edit_product(request, reservation_id):
-    if request.method == 'POST' and request.is_ajax():
+def edit_reservation(request, id):
+    if request.method == 'POST':
         try:
             # Get product berdasarkan id
-            reservation = Reservation.objects.get(pk=reservation_id)
+            reservation = Reservation.objects.get(pk=id)
 
-            # Get updated data from the request
-            date = request.POST.get('date')
-            time = request.POST.get('time')
-            number_of_people = request.POST.get('number_of_people')
+            data = json.loads(request.body)  # Load the JSON data
+            print(data)  # For debugging, log the entire data received
+
+            date = data.get('date')
+            print(date)  # Debugging output
+            time = data.get('time')
+            print(time)  # Debugging output
+            number_of_people = data.get('number_of_people')
+            print(number_of_people)  # Debugging output
+
 
             # Update the product fields
             if date:
