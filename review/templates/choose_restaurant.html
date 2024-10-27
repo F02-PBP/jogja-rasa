@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+<!--Prettier-->
+{% block title %}Book's Review{% endblock title %} 
+{% block content %}
+<!--Prettier-->
+{% include 'navbar.html' %}
+<style>
+    .title{
+        width: 75%;
+        border-bottom: 1px solid black;
+    }
+    .idk{
+        width: 75px;
+        height: 75px;
+    }
+</style>
+
+<div id="my-data"
+data-user-loggedin = "{{user_loggedin.pk}}"
+data-rating = "{{rating}}"
+create-review="{% url 'review:create_review' %}"
+data-reviews="{{ reviews }}"
+data-restaurant="{{ restaurant }}"
+data-restaurant-pk="{{restaurant.pk}}"
+data-users="{{ users }}"
+data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaurant.pk %}"
+>
+
+</div>
+
+<main>
+    <div id="restaurant-info" class="flex justify-center flex-wrap"></div>
+
+    <div class="flex justify-center py-6">
+        <div class="title text-3xl font-bold justify-between text-navy-800 flex">
+            <h1>Review & Rating</h1>
+            <button data-modal-target="crudModal" data-modal-toggle="crudModal" onclick="showModal();" type="button">+ New Review</button>
+        </div>
+    </div>
+    <div id="review-container"></div>
+
+    <div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
+        <div id="crudModalContent" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
+          <!-- Modal header -->
+          <div class="flex items-center justify-between p-4 border-b rounded-t">
+            <h3 class="text-xl font-semibold text-gray-900">
+              Add New Item Entry
+            </h3>
+            <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="closeModalBtn">
+              <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+              <span class="sr-only">Close modal</span>
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="px-6 py-4 space-y-6 form-style">
+            <form id="reviewEntryForm">
+
+              <input type="hidden" id="pk_resto" name="pk_resto">
+
+              <div class="mb-4">
+                <label for="rating" class="block text-sm font-medium text-gray-700">Rating</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" class="mt-1 block w-full border border-gray-300 rounded-md p-2 hover:border-indigo-700" required>
+              </div>
+              <div class="mb-4">
+                <label for="review" class="block text-sm font-medium text-gray-700">Review</label>
+                <textarea id="review" name="review" rows="3" class="mt-1 block w-full h-52 resize-none border border-gray-300 rounded-md p-2 hover:border-indigo-700" placeholder="How's your experience?" required></textarea>
+              </div>
+            </form>
+           </div>
+          <!-- Modal footer -->
+          <div class="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 p-6 border-t border-gray-200 rounded-b justify-center md:justify-end">
+            <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg" id="cancelButton">Cancel</button>
+            <button type="button" id="submitReviewForm" form="reviewEntryForm" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg">Save</button>
+          </div>
+        </div>
+    </div>
+
+    
+</main>
+
+<script>
+
+    const my_data = document.getElementById('my-data');
+
+    // const selectedReviews = JSON.parse(my_data.getAttribute('data-reviews'))
+    const users = JSON.parse(my_data.getAttribute('data-users'))
+    const selecteRestaurant = my_data.getAttribute('data-restaurant-pk')
+
+    const modal = document.getElementById('crudModal');
+    const modalContent = document.getElementById('crudModelContent');
+    
+
+    function showModal() {
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modal.classList.remove('hidden'); 
+        setTimeout(() => {
+            modalContent.classList.remove('opacity-0', 'scale-95');
+            modalContent.classList.add('opacity-100', 'scale-100');
+        }, 50); 
+    }
+
+    function hideModal() {
+
+        const modal = document.getElementById('crudModal');
+        const modalContent = document.getElementById('crudModalContent');
+
+        modalContent.classList.remove('opacity-100', 'scale-100');
+        modalContent.classList.add('opacity-0', 'scale-95');
+
+        setTimeout(() => {
+        modal.classList.add('hidden');
+        }, 150); 
+    }
+
+    document.getElementById("cancelButton").addEventListener("click", hideModal);
+    document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+
+    function addReviewEntry(){
+        if (is_valid()){
+            fetch(document.getElementById('my-data').getAttribute('create-review'), {
+            method: "POST",
+            body: new FormData(document.querySelector('#reviewEntryForm')),
+            })
+            .then(refreshPage)
+
+            document.getElementById("reviewEntryForm").reset(); 
+            document.querySelector("[data-modal-toggle='crudModal']").click();
+        }
+        else{
+            alert("Tidak dapat membuat review, periksa kembali input anda!")
+        }
+    }
+
+    const submitReviewButton = document.getElementById("submitReviewForm");
+
+    submitReviewButton.addEventListener('click', function(){
+        document.getElementById('pk_resto').value = selecteRestaurant;
+        addReviewEntry();
+    });
+
+    function is_valid(){
+        const rating = document.getElementById('rating').value;
+        const review = document.getElementById('review')
+        if (rating> 0 && rating <6 && review != null){
+            return true;
+        }
+        return false;
+    }
+
+    
+    async function getReviews(restaurant) {
+        return fetch(my_data.getAttribute('data-review-restaurant')).then((res)=>res.json());
+    }
+
+    async function refreshPage(){
+        const restaurant_info = document.getElementById('restaurant-info');
+        restaurant_info.innerHTML="";
+        let avgRating = (Math.round(my_data.getAttribute('data-rating') * 100) / 100).toFixed(2)
+        restaurant_info.innerHTML=`
+                <div class="title block pt-2 mb-2">
+                    <h1 class="text-3xl font-bold text-navy-800 text-center">{{restaurant.name}}</h1>
+                </div>
+
+                <div class="title block pb-2">
+                    <div class="text-center mt-4"><p class="block italic text-base text-gray-500">
+                        <span class="text-gray-700">Rating ${avgRating} dari 5, berdasarkan {{visitor}} ulasan.<br></span>
+                        "{{restaurant.description}}" <br> 📍 
+                        <span class="text-gray-700">{{restaurant.latitude}}, {{restaurant.longitude}}</span>
+                    </p></div>
+                </div>
+                `;
+        const review_container = document.getElementById('review-container');
+        review_container.innerHTML = "";
+
+
+        const reviews = await getReviews(selecteRestaurant);
+
+        let htmlString = ``;
+        
+        reviews.forEach(review => {
+            let selectuser = '';
+            for (const user of users){
+                if (user.pk == review.fields.user){
+                    selectuser = user.fields.full_name;
+                }
+            }
+            const userLoggedIn = my_data.getAttribute('data-user-loggedin')
+
+            htmlString += `
+
+            <div class="flex justify-center mb-6">
+            `
+            if (userLoggedIn == review.fields.user){
+                htmlString += `
+                <a href="/review/delete_review/${review.pk}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24">
+                    <rect width="24" height="24" fill="red" rx="4" ry="4"/>
+                    <line x1="4" y1="12" x2="20" y2="12" stroke="#ffffff" stroke-width="2"/>
+                </svg>
+                </a>
+            `
+            }
+            
+            htmlString += `
+                <div class="bg-gray-300 w-3/4 h-24 flex pl-4 justify-between items-center">
+                    <div class="flex flex-row">
+                        <div class="idk bg-gray-100 rounded-full flex justify-center items-center">
+                            <div class="flex justify-center items-center">
+
+
+                                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50px" height="50px" viewBox="0 0 20 20" version="1.1">
+                        
+                                    <title>profile [#1335]</title>
+                                    <desc>Created with Sketch.</desc>
+                                    <defs>
+                                
+                                </defs>
+                                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="Dribbble-Light-Preview" transform="translate(-420.000000, -2159.000000)" fill="#000000">
+                                            <g id="icons" transform="translate(56.000000, 160.000000)">
+                                                <path d="M374,2009 C371.794,2009 370,2007.206 370,2005 C370,2002.794 371.794,2001 374,2001 C376.206,2001 378,2002.794 378,2005 C378,2007.206 376.206,2009 374,2009 M377.758,2009.673 C379.124,2008.574 380,2006.89 380,2005 C380,2001.686 377.314,1999 374,1999 C370.686,1999 368,2001.686 368,2005 C368,2006.89 368.876,2008.574 370.242,2009.673 C366.583,2011.048 364,2014.445 364,2019 L366,2019 C366,2014 369.589,2011 374,2011 C378.411,2011 382,2014 382,2019 L384,2019 C384,2014.445 381.417,2011.048 377.758,2009.673" id="profile-[#1335]">
+                                
+                                </path>
+                                            </g>
+                                        </g>
+                                    </g>
+                                </svg>
+
+                            </div>
+                        </div>
+                        <div class="pl-3">
+                            <div>
+                                <h1 class="text-lg font-bold text-navy-800 text-left">${selectuser}</h1>
+                            </div>
+                            <div class="flex flex-row justify-between">
+                                <div class="flex flex-row">
+                `;
+            for (let i=0; i<review.fields.rating;i++){
+                htmlString +=
+                `
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="0 0 24 24" fill="none">
+                                    <path d="M11.245 4.174C11.4765 3.50808 11.5922 3.17513 11.7634 3.08285C11.9115 3.00298 12.0898 3.00298 12.238 3.08285C12.4091 3.17513 12.5248 3.50808 12.7563 4.174L14.2866 8.57639C14.3525 8.76592 14.3854 8.86068 14.4448 8.93125C14.4972 8.99359 14.5641 9.04218 14.6396 9.07278C14.725 9.10743 14.8253 9.10947 15.0259 9.11356L19.6857 9.20852C20.3906 9.22288 20.743 9.23007 20.8837 9.36432C21.0054 9.48051 21.0605 9.65014 21.0303 9.81569C20.9955 10.007 20.7146 10.2199 20.1528 10.6459L16.4387 13.4616C16.2788 13.5829 16.1989 13.6435 16.1501 13.7217C16.107 13.7909 16.0815 13.8695 16.0757 13.9507C16.0692 14.0427 16.0982 14.1387 16.1563 14.3308L17.506 18.7919C17.7101 19.4667 17.8122 19.8041 17.728 19.9793C17.6551 20.131 17.5108 20.2358 17.344 20.2583C17.1513 20.2842 16.862 20.0829 16.2833 19.6802L12.4576 17.0181C12.2929 16.9035 12.2106 16.8462 12.1211 16.8239C12.042 16.8043 11.9593 16.8043 11.8803 16.8239C11.7908 16.8462 11.7084 16.9035 11.5437 17.0181L7.71805 19.6802C7.13937 20.0829 6.85003 20.2842 6.65733 20.2583C6.49056 20.2358 6.34626 20.131 6.27337 19.9793C6.18915 19.8041 6.29123 19.4667 6.49538 18.7919L7.84503 14.3308C7.90313 14.1387 7.93218 14.0427 7.92564 13.9507C7.91986 13.8695 7.89432 13.7909 7.85123 13.7217C7.80246 13.6435 7.72251 13.5829 7.56262 13.4616L3.84858 10.6459C3.28678 10.2199 3.00588 10.007 2.97101 9.81569C2.94082 9.65014 2.99594 9.48051 3.11767 9.36432C3.25831 9.23007 3.61074 9.22289 4.31559 9.20852L8.9754 9.11356C9.176 9.10947 9.27631 9.10743 9.36177 9.07278C9.43726 9.04218 9.50414 8.99359 9.55657 8.93125C9.61593 8.86068 9.64887 8.76592 9.71475 8.57639L11.245 4.174Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>                
+                `;
+            }
+            htmlString +=
+                `
+                                </div>
+                                <div class="mr-20">(${review.fields.rating}/5)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-6/7 w-3/5 mr-4 bg-gray-100 text-lg text-center">
+                        ${review.fields.review}<br>
+                        <span>${review.fields.date}</span>
+                    </div>
+
+                </div>
+            </div>
+                `;
+        });
+
+        review_container.innerHTML = htmlString;
+    }
+    refreshPage();
+
+
+</script>
+{% include 'footer.html' %}
+{% endblock content %}
