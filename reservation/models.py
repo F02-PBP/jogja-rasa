@@ -1,11 +1,8 @@
-import random
-import string
-from main.models import *
+import uuid
+from django.db import models
+from django.contrib.auth.models import User
 from restaurants.models import Restaurant
 
-# Membuat string random dengan kombinasi huruf dan angka sepanjang 5 karakter
-def generate_reservation_id():
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 class Reservation(models.Model):
     PEOPLE_CHOICES = [
         (1, '1 orang'),
@@ -18,9 +15,21 @@ class Reservation(models.Model):
         (8, '8 orang'),
     ]
 
-    reservation_id = models.CharField(primary_key=True, max_length=5, unique=True, editable=False, default=generate_reservation_id)
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        verbose_name='reservation_id'
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE) 
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     date = models.DateField()
     time = models.TimeField()
     number_of_people = models.PositiveSmallIntegerField(choices=PEOPLE_CHOICES)
+
+    def __str__(self):
+        return f"Reservation {self.id} - {self.user.username} at {self.restaurant.name}"
+
+    class Meta:
+        ordering = ['date', 'time']
