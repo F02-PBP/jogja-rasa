@@ -33,6 +33,7 @@ def show_review(request):
         'can_view_discussions': True,
         'restaurants': restaurants,
         'review': reviews,
+        'restaurants_json': serializers.serialize('json', restaurants)
     }
 
     return render(request, "review.html", context)
@@ -64,7 +65,7 @@ def delete_review(request, id):
 @csrf_exempt
 @require_POST
 def create_review(request):
-    resto_id = int(request.POST.get('pk_resto'))
+    resto_id = request.POST.get('pk_resto')
     resto = Restaurant.objects.get(pk=resto_id)
     user = request.user
     date = datetime.now()
