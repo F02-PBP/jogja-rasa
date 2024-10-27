@@ -340,7 +340,6 @@
     let debounceTimer;
     const initialRestaurants = restaurantGrid.innerHTML;
 
-    // Search form event listeners
     searchForm.addEventListener("submit", function (e) {
       e.preventDefault();
       fetchRestaurants();
@@ -365,7 +364,6 @@
       fetchRestaurants();
     });
 
-    // Fetch restaurants function
     function fetchRestaurants() {
       const searchQuery = searchInput.value.trim();
       const regionValue = regionSelect.value;
@@ -405,7 +403,6 @@
         });
     }
 
-    // Display restaurants function
     function displayRestaurants(restaurants) {
       restaurantGrid.innerHTML = "";
 
@@ -449,13 +446,11 @@
         `;
         restaurantGrid.appendChild(card);
 
-        // Add event listener to the new bookmark button
         const newBookmarkButton = card.querySelector(".btn-bookmark");
         newBookmarkButton.addEventListener("click", handleBookmarkClick);
       });
     }
 
-    // Bookmark handling function
     function handleBookmarkClick(event) {
       event.preventDefault();
       const btn = event.target;
@@ -498,7 +493,6 @@
         });
     }
 
-    // Helper function to get CSRF token
     function getCookie(name) {
       let cookieValue = null;
       if (document.cookie && document.cookie !== "") {
@@ -514,14 +508,12 @@
       return cookieValue;
     }
 
-    // Add event listeners to initial bookmark buttons
     const initialBookmarkButtons = document.querySelectorAll(".btn-bookmark");
     initialBookmarkButtons.forEach((button) => {
       button.addEventListener("click", handleBookmarkClick);
     });
   });
 
-  // Time selection setup
   const selectElement = document.getElementById("time");
   const startTime = 9; // jam mulai
   const endTime = 20; // jam selesai
@@ -542,11 +534,14 @@
     }
   }
 
-  // Modal handling
   const modal = document.getElementById("crudModal");
   const modalContent = document.getElementById("crudModalContent");
 
   function showModal(restaurantId) {
+    if (document.body.classList.contains("user-not-authenticated")) {
+      window.showLoginModal();
+      return;
+    }
     const modal = document.getElementById("crudModal");
     const modalContent = document.getElementById("crudModalContent");
 
@@ -585,8 +580,12 @@
   document.getElementById("cancelButton").addEventListener("click", hideModal);
   document.getElementById("closeModalBtn").addEventListener("click", hideModal);
 
-  // Reservation handling
   function addReservation() {
+    if (document.body.classList.contains("user-not-authenticated")) {
+      window.showLoginModal();
+      return false;
+    }
+
     fetch("{% url 'main:add_reservation' %}", {
       method: "POST",
       body: new FormData(document.querySelector("#reservationForm")),
@@ -594,6 +593,7 @@
 
     document.getElementById("reservationForm").reset();
     hideModal();
+    alert("Reservasi berhasil ditambahkan!");
     return false;
   }
 
