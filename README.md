@@ -44,7 +44,7 @@ JogjaRasa tidak hanya berfungsi sebagai panduan kuliner, tetapi juga menjadi pen
 
 ## 🎉 Bergabunglah Bersama Kami!
 
-Aplikasi JogjaRasa sekarang bisa dicoba secara langsung di [JogjaRasa](http://grace-karina31-jogjarasa.pbp.cs.ui.ac.id/).
+Aplikasi JogjaRasa sekarang bisa dicoba secara langsung di [JogjaRasa](https://jogja-rasa-production.up.railway.app).
 
 - 🔑 Jangan lupa untuk **login** atau **registrasi** jika belum memiliki akun.
 - 🎯 Mulailah mencari tempat makan terbaik di Yogyakarta!
