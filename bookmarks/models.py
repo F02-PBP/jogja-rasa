@@ -1,10 +1,25 @@
 from django.contrib.auth.models import User
 from django.db import models
+import uuid
 from restaurants.models import Restaurant
 
 class Bookmark(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='bookmarked_by')
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    user = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE, 
+        related_name='bookmarks'
+    )
+    restaurant = models.ForeignKey(
+        Restaurant, 
+        on_delete=models.CASCADE, 
+        related_name='bookmarked_by',
+        to_field='id' 
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -15,3 +30,12 @@ class Bookmark(models.Model):
 
     def __str__(self):
         return f"{self.user.username} bookmarks {self.restaurant.name}"
+
+    def save(self, *args, **kwargs):
+        if self.restaurant_id:
+            try:
+                uuid.UUID(str(self.restaurant_id))
+            except ValueError:
+                raise ValueError("Invalid restaurant UUID")
+        super().save(*args, **kwargs)
+        
