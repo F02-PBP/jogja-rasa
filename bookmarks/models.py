@@ -18,7 +18,6 @@ class Bookmark(models.Model):
         Restaurant, 
         on_delete=models.CASCADE, 
         related_name='bookmarked_by',
-        to_field='id' 
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -31,11 +30,4 @@ class Bookmark(models.Model):
     def __str__(self):
         return f"{self.user.username} bookmarks {self.restaurant.name}"
 
-    def save(self, *args, **kwargs):
-        if self.restaurant_id:
-            try:
-                uuid.UUID(str(self.restaurant_id))
-            except ValueError:
-                raise ValueError("Invalid restaurant UUID")
-        super().save(*args, **kwargs)
         
