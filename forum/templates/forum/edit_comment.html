@@ -1,21 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
-{% block title %}Buat Topik Baru!{% endblock title %}
+{% block title %}Edit Komentar{% endblock title %}
 
 {% block content %}
-{% include 'navbar.html' %}
+  {% include 'navbar.html' %}
+
   <div class="container mx-auto px-4 py-8">
-    <h2 class="text-2xl font-bold text-navy-700 mb-4">Buat Topik Baru!</h2>
-    <form method="POST">
+    <h2 class="text-2xl font-bold text-navy-700 mb-4">Edit Komentar</h2>
+    
+    <form method="POST" class="space-y-4">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit" class="btn-primary">Kirim</button>
+      <button type="submit" class="btn-primary hover:shadow-lg">Simpan Perubahan</button>
+      <a href="{% url 'forum:topic_detail' comment.topic.id %}" class="text-gray-600 hover:text-navy-600">Cancel</a>
     </form>
   </div>
 
- 
+
   {% include 'footer.html' %}
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -27,5 +29,5 @@
         once: true,
       });
     });
-  </script>  
+  </script>
 {% endblock content %}
