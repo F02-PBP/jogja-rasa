@@ -29,7 +29,6 @@ ALLOWED_HOSTS = [
     'jogja-rasa-production.up.railway.app',
     'localhost',
     '127.0.0.1',
-    '*', 
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -143,5 +142,3 @@ else:
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "grace-karina31-jogjarasa.pbp.cs.ui.ac.id"]
