@@ -1,81 +1,111 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Bookmark{% endblock title %}
-
-{% block content %}
-{% include 'navbar.html' %}
+{% extends 'base.html' %} {% load static %} {% block title %}Bookmark
+<!--Prettier-->
+{% endblock title %} {% block content %} {% include 'navbar.html' %}
 <main class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">Bookmark Anda</h1>
-    <div id="bookmarkGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {% for bookmark in bookmarks %}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full">
-            <div class="p-4 flex-grow">
-                <h2 class="text-xl font-semibold mb-2 text-navy-700">{{ bookmark.restaurant.name }}</h2>
-                <p class="text-gray-600 mb-4">{{ bookmark.restaurant.description|truncatechars:100 }}</p>
-            </div>
-            <div class="p-4 bg-gray-50 flex justify-between items-center">
-                <span class="text-sm text-gray-500">{{ bookmark.restaurant.get_location }}</span>
-                <button class="btn-bookmark text-sm" data-id="{{ bookmark.restaurant.id }}">Remove Bookmark</button>
-            </div>
-        </div>
-        {% empty %}
-        <p class="col-span-3 text-center text-gray-500">Anda belum menambahkan bookmark.</p>
-        {% endfor %}
+  <h1 class="text-3xl font-bold mb-8 text-center text-navy-800">
+    Bookmark Anda
+  </h1>
+  <div
+    id="bookmarkGrid"
+    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+  >
+    {% for bookmark in bookmarks %}
+    <div
+      class="bg-white rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition duration-300 flex flex-col h-full"
+    >
+      <div class="p-4 flex-grow">
+        <h2 class="text-xl font-semibold mb-2 text-navy-700">
+          {{ bookmark.restaurant.name }}
+        </h2>
+        <p class="text-gray-600 mb-4">
+          {{ bookmark.restaurant.description|truncatechars:100 }}
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 flex justify-between items-center">
+        <span class="text-sm text-gray-500"
+          >{{ bookmark.restaurant.get_location }}</span
+        >
+        <button
+          class="btn-bookmark text-sm"
+          data-id="{{ bookmark.restaurant.id }}"
+        >
+          Remove Bookmark
+        </button>
+      </div>
     </div>
+    {% empty %}
+    <p class="col-span-3 text-center text-gray-500">
+      Anda belum menambahkan bookmark.
+    </p>
+    {% endfor %}
+  </div>
 </main>
 {% include 'footer.html' %}
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const bookmarkButtons = document.querySelectorAll('.btn-bookmark');
+  document.addEventListener("DOMContentLoaded", function () {
+    const bookmarkButtons = document.querySelectorAll(".btn-bookmark");
+    bookmarkButtons.forEach((button) => {
+      button.addEventListener("click", function (event) {
+        event.preventDefault();
+        const restaurantId = this.getAttribute("data-id");
+        const btn = this;
+        const card = btn.closest(".bg-white");
 
-        bookmarkButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                const restaurantId = this.getAttribute('data-id');
-                const btn = this;
-
-                fetch("{% url 'bookmarks:toggle_bookmark' %}", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: new URLSearchParams({
-                        'restaurant_id': restaurantId
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.is_bookmarked === false) {
-                        // Hapus kartu dari grid
-                        btn.closest('.bg-white').remove();
-                        // Opsional: Tampilkan pesan
-                        alert('Bookmark dihapus.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Terjadi kesalahan. Silakan coba lagi.');
-                });
-            });
-        });
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Apakah string cookie ini dimulai dengan nama yang kita cari?
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
+        fetch("{% url 'bookmarks:toggle_bookmark' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": getCookie("csrftoken"),
+          },
+          body: new URLSearchParams({
+            restaurant_id: restaurantId,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
             }
-            return cookieValue;
-        }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success && !data.is_bookmarked) {
+              card.style.transition = "all 0.3s ease-out";
+              card.style.opacity = "0";
+              card.style.transform = "scale(0.95)";
+
+              setTimeout(() => {
+                card.remove();
+
+                const grid = document.getElementById("bookmarkGrid");
+                if (grid && grid.children.length === 0) {
+                  grid.innerHTML =
+                    '<p class="col-span-3 text-center text-gray-500">Anda belum menambahkan bookmark.</p>';
+                }
+              }, 300);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan. Silakan coba lagi.");
+          });
+      });
     });
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  });
 </script>
 {% endblock content %}
