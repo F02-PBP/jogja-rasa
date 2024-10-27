@@ -5,6 +5,9 @@ from django.views.decorators.http import require_POST
 from .models import Bookmark
 from restaurants.models import Restaurant
 import json
+import uuid
+from django.db import IntegrityError
+
 
 def bookmark_list(request):
     bookmarks = Bookmark.objects.filter(user=request.user)
@@ -31,37 +34,47 @@ def toggle_bookmark(request):
             }, status=400)
 
         try:
-            restaurant = Restaurant.objects.get(id=restaurant_id)
-        except Restaurant.DoesNotExist:
-            return JsonResponse({
-                'error': 'Restaurant not found'
-            }, status=404)
+            if not isinstance(restaurant_id, uuid.UUID):
+                restaurant_id = uuid.UUID(str(restaurant_id))
         except ValueError:
             return JsonResponse({
                 'error': 'Invalid restaurant ID format'
             }, status=400)
 
-        bookmark = Bookmark.objects.filter(
-            user=request.user,
-            restaurant=restaurant
-        ).first()
+        try:
+            restaurant = Restaurant.objects.get(id=restaurant_id)
+        except Restaurant.DoesNotExist:
+            return JsonResponse({
+                'error': 'Restaurant not found'
+            }, status=404)
 
-        if bookmark:
-            bookmark.delete()
-            is_bookmarked = False
-            message = 'Bookmark removed successfully'
-        else:
-            Bookmark.objects.create(
+        try:
+            bookmark = Bookmark.objects.get(
                 user=request.user,
                 restaurant=restaurant
             )
-            is_bookmarked = True
-            message = 'Restaurant bookmarked successfully'
+            bookmark.delete()
+            is_bookmarked = False
+            message = 'Bookmark removed successfully'
+        except Bookmark.DoesNotExist:
+            try:
+                bookmark = Bookmark.objects.create(
+                    id=uuid.uuid4(),
+                    user=request.user,
+                    restaurant=restaurant
+                )
+                is_bookmarked = True
+                message = 'Restaurant bookmarked successfully'
+            except IntegrityError:
+                return JsonResponse({
+                    'error': 'Bookmark already exists'
+                }, status=400)
 
         return JsonResponse({
             'success': True,
             'is_bookmarked': is_bookmarked,
-            'message': message
+            'message': message,
+            'bookmark_id': str(bookmark.id) if is_bookmarked else None
         })
 
     except Exception as e:
