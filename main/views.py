@@ -241,7 +241,7 @@ def add_reservation(request):
     restaurant_id = request.POST.get("restaurantObj")
 
     try:
-        restaurant = Restaurant.objects.get(id=restaurant_id)  # Fetch the Restaurant instance
+        restaurant = Restaurant.objects.get(id=restaurant_id)  
     except Restaurant.DoesNotExist:
         return HttpResponse(b"Restaurant not found", status=404)
     
