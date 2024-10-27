@@ -8,7 +8,7 @@ urlpatterns =[
     path('show_restaurants_json/', show_restaurants_json, name='show_restaurants_json'),
     path('show_reviews_json/', show_reviews_json, name='show_reviews_json'),
     path('create_review/', create_review, name='create_review'),
-    path('show_review/<int:id>/', show_review_more, name='show_review_more'),
-    path('show_reviews_by_restaurant_json/<int:id>/', show_reviews_by_restaurant_json, name='show_reviews_by_restaurant_json'),
-    path('delete_review/<int:id>/', delete_review)
+    path('show_review/<uuid:id>/', show_review_more, name='show_review_more'),
+    path('show_reviews_by_restaurant_json/<uuid:id>/', show_reviews_by_restaurant_json, name='show_reviews_by_restaurant_json'),
+    path('delete_review/<uuid:id>/', delete_review)
 ]
