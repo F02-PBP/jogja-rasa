@@ -18,7 +18,6 @@
 
 <div id="my-data"
 data-user-loggedin = "{{user_loggedin.pk}}"
-data-rating = "{{rating}}"
 create-review="{% url 'review:create_review' %}"
 data-reviews="{{ reviews }}"
 data-restaurant="{{ restaurant }}"
@@ -38,7 +37,7 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
             <button data-modal-target="crudModal" data-modal-toggle="crudModal" onclick="showModal();" type="button">+ New Review</button>
         </div>
     </div>
-    <div id="review-container"></div>
+    <div id="review-container" class="min-w-max"></div>
 
     <div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
         <div id="crudModalContent" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
@@ -160,7 +159,22 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
     async function refreshPage(){
         const restaurant_info = document.getElementById('restaurant-info');
         restaurant_info.innerHTML="";
-        let avgRating = (Math.round(my_data.getAttribute('data-rating') * 100) / 100).toFixed(2)
+        
+        const reviews = await getReviews(selecteRestaurant);
+        
+        let rating = 0;
+        let visitor = 0;
+        reviews.forEach(review=>{
+            rating += review.fields.rating;
+            visitor += 1
+        });
+
+        if (visitor > 0){
+            rating = rating / visitor;
+        }
+
+        rating = (Math.round(rating * 100) / 100).toFixed(2)
+
         restaurant_info.innerHTML=`
                 <div class="title block pt-2 mb-2">
                     <h1 class="text-3xl font-bold text-navy-800 text-center">{{restaurant.name}}</h1>
@@ -168,9 +182,9 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
 
                 <div class="title block pb-2">
                     <div class="text-center mt-4"><p class="block italic text-base text-gray-500">
-                        <span class="text-gray-700">Rating ${avgRating} dari 5, berdasarkan {{visitor}} ulasan.<br></span>
+                        <span class="text-gray-700">Rating ${rating} dari 5, berdasarkan ${visitor} ulasan.<br></span>
                         "{{restaurant.description}}" <br> 📍 
-                        <span class="text-gray-700">{{restaurant.latitude}}, {{restaurant.longitude}}</span>
+                        <span class="text-gray-700">{{restaurant.get_location}}</span>
                     </p></div>
                 </div>
                 `;
@@ -178,7 +192,6 @@ data-review-restaurant="{% url 'review:show_reviews_by_restaurant_json' restaura
         review_container.innerHTML = "";
 
 
-        const reviews = await getReviews(selecteRestaurant);
 
         let htmlString = ``;
         
