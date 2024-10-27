@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     'django_extensions', 
     'main',
     'restaurants',
+    'reservation',
+    'review',
     'forum',
+    'bookmarks',
 ]
 
 MIDDLEWARE = [
@@ -109,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 

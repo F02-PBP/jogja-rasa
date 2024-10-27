@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
-<!--Prettier-->
-{% block title %}Register{% endblock title %}
+{% extends 'base.html' %} {% block title %}Register{% endblock title %}
 <!--Prettier-->
 {% block content %}
 <div class="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
@@ -14,6 +12,7 @@
         </h2>
       </div>
     </div>
+
     <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
       <div class="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <div class="lg:col-span-1">
@@ -23,57 +22,90 @@
           </p>
         </div>
         <div class="lg:col-span-2">
-          <form method="POST">
+          <form method="POST" novalidate>
             {% csrf_token %}
             <div class="grid gap-6 grid-cols-1 md:grid-cols-2">
               <div class="md:col-span-2">
                 <label
                   for="{{ form.full_name.id_for_label }}"
                   class="block text-sm font-medium text-gray-700"
-                  >{{ form.full_name.label }}</label
                 >
-                {{ form.full_name }}
+                  {{ form.full_name.label }}
+                </label>
+                {{ form.full_name }} {% if form.full_name.errors %}
+                <p class="mt-1 text-sm text-red-600">
+                  {{ form.full_name.errors.0 }}
+                </p>
+                {% endif %}
               </div>
               <div class="md:col-span-2">
                 <label
                   for="{{ form.email.id_for_label }}"
                   class="block text-sm font-medium text-gray-700"
-                  >{{ form.email.label }}</label
                 >
-                {{ form.email }}
+                  {{ form.email.label }}
+                </label>
+                {{ form.email }} {% if form.email.errors %}
+                <p class="mt-1 text-sm text-red-600">
+                  {{ form.email.errors.0 }}
+                </p>
+                {% endif %}
               </div>
               <div class="md:col-span-2">
                 <label
                   for="{{ form.interested_in.id_for_label }}"
                   class="block text-sm font-medium text-gray-700"
-                  >{{ form.interested_in.label }}</label
                 >
-                {{ form.interested_in }}
+                  {{ form.interested_in.label }}
+                </label>
+                {{ form.interested_in }} {% if form.interested_in.errors %}
+                <p class="mt-1 text-sm text-red-600">
+                  {{ form.interested_in.errors.0 }}
+                </p>
+                {% endif %}
               </div>
               <div class="md:col-span-1">
                 <label
                   for="{{ form.password1.id_for_label }}"
                   class="block text-sm font-medium text-gray-700"
-                  >Password</label
                 >
-                {{ form.password1 }}
+                  Password
+                </label>
+                {{ form.password1 }} {% if form.password1.errors %}
+                <p class="mt-1 text-sm text-red-600">
+                  {{ form.password1.errors.0 }}
+                </p>
+                {% endif %}
               </div>
               <div class="md:col-span-1">
                 <label
                   for="{{ form.password2.id_for_label }}"
                   class="block text-sm font-medium text-gray-700"
-                  >Confirm Password</label
                 >
-                {{ form.password2 }}
+                  Confirm Password
+                </label>
+                {{ form.password2 }} {% if form.password2.errors %}
+                <p class="mt-1 text-sm text-red-600">
+                  {{ form.password2.errors.0 }}
+                </p>
+                {% endif %}
               </div>
+              {% if form.non_field_errors %}
+              <div
+                class="md:col-span-2 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"
+              >
+                {{ form.non_field_errors.0 }}
+              </div>
+              {% endif %}
               <div class="md:col-span-2 flex justify-between items-center">
                 <p class="text-gray-600 text-sm">
                   Already have an account?
                   <a
                     href="{% url 'main:login' %}"
                     class="text-navy-600 hover:text-navy-800 font-semibold"
-                    >Please login</a
                   >
+                    Please login
+                  </a>
                 </p>
                 <button type="submit" class="btn-primary">Register</button>
               </div>
@@ -82,18 +114,6 @@
         </div>
       </div>
     </div>
-    {% if messages %}
-    <div
-      class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md mt-4"
-      role="alert"
-    >
-      <ul>
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endif %}
   </div>
 </div>
 {% endblock content %}

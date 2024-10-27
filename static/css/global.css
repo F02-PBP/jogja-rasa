@@ -1,4 +1,5 @@
 :root {
+  --navy-50: #f0f5ff;
   --navy-100: #e0e7ff;
   --navy-200: #c7d2fe;
   --navy-300: #a5b4fc;
@@ -142,3 +143,4 @@ body {
 .nav-link:hover::after {
   transform: scaleX(1);
 }
+

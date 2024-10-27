@@ -1,6 +1,4 @@
-{% extends 'base.html' %}
-<!--Prettier-->
-{% block title %}Login{% endblock title %}
+{% extends 'base.html' %} {% block title %}Login{% endblock title %}
 <!--Prettier-->
 {% block content %}
 <div class="min-h-screen p-6 bg-gray-100 flex items-center justify-center">
@@ -14,14 +12,7 @@
         </h2>
       </div>
     </div>
-    {% if messages %} {% for message in messages %}
-    <div
-      class="{% if message.tags == 'error' %}bg-red-100 border-l-4 border-red-500 text-red-700{% else %}bg-green-100 border-l-4 border-green-500 text-green-700{% endif %} p-4 rounded-md mb-4"
-      role="alert"
-    >
-      {{ message }}
-    </div>
-    {% endfor %} {% endif %}
+
     <div class="bg-white rounded-lg shadow-xl p-8 mb-8">
       <form method="POST" action="">
         {% csrf_token %}
@@ -30,26 +21,44 @@
             <label
               for="{{ form.username.id_for_label }}"
               class="block text-sm font-medium text-gray-700"
-              >Email</label
             >
-            {{ form.username }}
+              Email
+            </label>
+            {{ form.username }} {% if form.username.errors %}
+            <p class="mt-1 text-sm text-red-600">
+              {{ form.username.errors.0 }}
+            </p>
+            {% endif %}
           </div>
           <div>
             <label
               for="{{ form.password.id_for_label }}"
               class="block text-sm font-medium text-gray-700"
-              >Password</label
             >
-            {{ form.password }}
+              Password
+            </label>
+            {{ form.password }} {% if form.password.errors %}
+            <p class="mt-1 text-sm text-red-600">
+              {{ form.password.errors.0 }}
+            </p>
+            {% endif %}
           </div>
+          {% if form.non_field_errors %}
+          <div
+            class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md"
+          >
+            {{ form.non_field_errors.0 }}
+          </div>
+          {% endif %}
           <div class="flex justify-between items-center">
             <p class="text-gray-600 text-sm">
               Don't have an account yet?
               <a
                 href="{% url 'main:register' %}"
                 class="text-navy-600 hover:text-navy-800 font-semibold"
-                >Register Now</a
               >
+                Register Now
+              </a>
             </p>
             <button type="submit" class="btn-primary">Login</button>
           </div>

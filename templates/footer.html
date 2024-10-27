@@ -3,10 +3,10 @@
   <div
     class="max-w-screen-xl px-4 py-12 mx-auto space-y-8 overflow-hidden sm:px-6 lg:px-8"
   >
-    <nav class="flex flex-wrap justify-center -mx-5 -my-2">
+    <div class="flex flex-wrap justify-center -mx-5 -my-2">
       <div class="px-5 py-2">
         <a
-          href="#"
+          href="{% url 'main:home' %}"
           class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
         >
           Home
@@ -14,37 +14,82 @@
       </div>
       <div class="px-5 py-2">
         <a
-          href="#"
+          href="/cari-resto"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
+        >
+          Cari Resto
+        </a>
+      </div>
+      <div class="px-5 py-2">
+        {% if user.is_authenticated %}
+        <a
+          href="/bookmark"
           class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
         >
           Bookmark
         </a>
-      </div>
-      <div class="px-5 py-2">
+        {% else %}
         <a
           href="#"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300 auth-required"
+        >
+          Bookmark
+        </a>
+        {% endif %}
+      </div>
+      <div class="px-5 py-2">
+        {% if user.is_authenticated %}
+        <a
+          href="/reservasi"
           class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
         >
           Reservasi
         </a>
-      </div>
-      <div class="px-5 py-2">
+        {% else %}
         <a
           href="#"
-          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300 auth-required"
         >
-          Rekomendasi
+          Reservasi
         </a>
+        {% endif %}
       </div>
       <div class="px-5 py-2">
+        {% if user.is_authenticated %}
         <a
-          href="#"
+          href="/review"
           class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
         >
-          Contact
+          Review
         </a>
+        {% else %}
+        <a
+          href="#"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300 auth-required"
+        >
+          Review
+        </a>
+        {% endif %}
       </div>
-    </nav>
+      <div class="px-5 py-2">
+        {% if user.is_authenticated %}
+        <a
+          href="/forum"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300"
+        >
+          Forum
+        </a>
+        {% else %}
+        <a
+          href="#"
+          class="text-base leading-6 text-gray-700 hover:text-navy-600 transition duration-300 auth-required"
+        >
+          Forum
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
     <div class="flex justify-center mt-8 space-x-6">
       <a
         href="#"
@@ -99,6 +144,7 @@
         </svg>
       </a>
     </div>
+
     <div class="mt-8 text-center">
       <p class="text-base leading-6 text-gray-500">
         © 2024 JogjaRasa. All rights reserved.
@@ -108,4 +154,19 @@
       </p>
     </div>
   </div>
+
+  {% include 'components/please_login_modal.html' %}
 </footer>
+
+<script src="{% static 'js/auth_modal.js' %}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const footerAuthLinks = document.querySelectorAll("footer .auth-required");
+    footerAuthLinks.forEach((link) => {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.showLoginModal(e);
+      });
+    });
+  });
+</script>
