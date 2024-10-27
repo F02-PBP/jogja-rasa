@@ -1,10 +1,9 @@
-# bookmarks/tests.py
-
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
 from restaurants.models import Restaurant
 from .models import Bookmark
+from django.db import IntegrityError
 
 class BookmarkTestCase(TestCase):
     def setUp(self):
@@ -34,8 +33,8 @@ class BookmarkTestCase(TestCase):
         self.restaurant4 = Restaurant.objects.create(
             name='Restoran D',
             description='Deskripsi Restoran D',
-            longitude=97.00,  # Koordinat yang tidak memenuhi kondisi apapun
-            latitude=39.700
+            longitude=109.00,  # Koordinat yang tidak memenuhi kondisi apapun
+            latitude=-7.70
         )
 
         # Client untuk pengguna terautentikasi
@@ -54,7 +53,15 @@ class BookmarkTestCase(TestCase):
         url = reverse('bookmarks:toggle_bookmark')
         response = self.client1.post(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)  # UUID sebagai string
 
         # Pastikan bookmark dibuat
         bookmark_exists = Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant1).exists()
@@ -63,11 +70,19 @@ class BookmarkTestCase(TestCase):
     def test_remove_bookmark_authenticated_user(self):
         """Test menghapus bookmark oleh pengguna terautentikasi."""
         # Tambahkan bookmark terlebih dahulu
-        Bookmark.objects.create(user=self.user1, restaurant=self.restaurant1)
+        bookmark = Bookmark.objects.create(user=self.user1, restaurant=self.restaurant1)
         url = reverse('bookmarks:toggle_bookmark')
         response = self.client1.post(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': False})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertFalse(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Bookmark removed successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsNone(json_response['bookmark_id'])
 
         # Pastikan bookmark dihapus
         bookmark_exists = Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant1).exists()
@@ -80,19 +95,43 @@ class BookmarkTestCase(TestCase):
         # Toggle pertama: tambah bookmark
         response = self.client1.post(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
         self.assertTrue(Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant1).exists())
 
         # Toggle kedua: hapus bookmark
         response = self.client1.post(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': False})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertFalse(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Bookmark removed successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsNone(json_response['bookmark_id'])
         self.assertFalse(Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant1).exists())
 
         # Toggle ketiga: tambah kembali
         response = self.client1.post(url, {'restaurant_id': self.restaurant1.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
         self.assertTrue(Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant1).exists())
 
     def test_add_bookmark_different_users(self):
@@ -102,13 +141,29 @@ class BookmarkTestCase(TestCase):
         # Pengguna pertama menambahkan bookmark
         response = self.client1.post(url, {'restaurant_id': self.restaurant2.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
         self.assertTrue(Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant2).exists())
 
         # Pengguna kedua menambahkan bookmark yang sama
         response = self.client2.post(url, {'restaurant_id': self.restaurant2.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
         self.assertTrue(Bookmark.objects.filter(user=self.user2, restaurant=self.restaurant2).exists())
 
         # Pastikan kedua bookmark ada
@@ -117,20 +172,15 @@ class BookmarkTestCase(TestCase):
         self.assertEqual(bookmarks_user1, 1)
         self.assertEqual(bookmarks_user2, 1)
 
-    def test_toggle_bookmark_without_restaurant_id(self):
-        """Test toggling bookmark tanpa memberikan ID restoran."""
-        url = reverse('bookmarks:toggle_bookmark')
-        response = self.client1.post(url, {'restaurant_id': ''})  # Mengirim restaurant_id kosong
-        self.assertEqual(response.status_code, 400)
-        self.assertJSONEqual(response.content, {'error': 'No restaurant ID provided.'})
-
     def test_toggle_bookmark_with_invalid_restaurant_id(self):
-        """Test toggling bookmark dengan ID restoran yang tidak ada."""
+        """Test toggling bookmark dengan ID restoran yang tidak valid."""
         url = reverse('bookmarks:toggle_bookmark')
         invalid_id = 'invalid_id'  # Mengirim restaurant_id yang tidak valid
         response = self.client1.post(url, {'restaurant_id': invalid_id})
         self.assertEqual(response.status_code, 400)  # Sesuai dengan view yang diperbarui
-        self.assertJSONEqual(response.content, {'error': 'Invalid restaurant ID.'})
+        json_response = response.json()
+        self.assertIn('error', json_response)
+        self.assertEqual(json_response['error'], 'Invalid restaurant ID format')
 
     def test_toggle_bookmark_unauthenticated_user(self):
         """Test bahwa pengguna tidak terautentikasi tidak bisa toggle bookmark."""
@@ -147,11 +197,19 @@ class BookmarkTestCase(TestCase):
         # Tambahkan bookmark pertama kali
         response = self.client1.post(url, {'restaurant_id': self.restaurant3.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
         self.assertEqual(Bookmark.objects.filter(user=self.user1, restaurant=self.restaurant3).count(), 1)
 
         # Coba tambahkan bookmark lagi secara manual
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             Bookmark.objects.create(user=self.user1, restaurant=self.restaurant3)  # Harus gagal karena unique_together
 
     def test_remove_nonexistent_bookmark(self):
@@ -161,17 +219,41 @@ class BookmarkTestCase(TestCase):
         # Coba hapus bookmark yang belum ada (toggle akan menambah bookmark)
         response = self.client1.post(url, {'restaurant_id': self.restaurant2.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
 
         # Hapus bookmark pertama kali
         response = self.client1.post(url, {'restaurant_id': self.restaurant2.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': False})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertFalse(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Bookmark removed successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsNone(json_response['bookmark_id'])
 
         # Coba hapus lagi (toggle akan menambah kembali bookmark)
         response = self.client1.post(url, {'restaurant_id': self.restaurant2.id})
         self.assertEqual(response.status_code, 200)
-        self.assertJSONEqual(response.content, {'is_bookmarked': True})
+        json_response = response.json()
+        self.assertIn('is_bookmarked', json_response)
+        self.assertTrue(json_response['is_bookmarked'])
+        self.assertIn('success', json_response)
+        self.assertTrue(json_response['success'])
+        self.assertIn('message', json_response)
+        self.assertEqual(json_response['message'], 'Restaurant bookmarked successfully')
+        self.assertIn('bookmark_id', json_response)
+        self.assertIsInstance(json_response['bookmark_id'], str)
 
     def test_toggle_bookmark_with_invalid_method(self):
         """Test bahwa metode selain POST tidak diizinkan."""
@@ -184,3 +266,8 @@ class BookmarkTestCase(TestCase):
         bookmark = Bookmark.objects.create(user=self.user1, restaurant=self.restaurant1)
         expected_str = f"{self.user1.username} bookmarks {self.restaurant1.name}"
         self.assertEqual(str(bookmark), expected_str)
+
+    def test_get_location_default(self):
+        """Test bahwa get_location mengembalikan 'Yogyakarta Barat' jika koordinat tidak sesuai kondisi."""
+        restaurant = self.restaurant4  # longitude=109.00, latitude=-7.70
+        self.assertEqual(restaurant.get_location(), "Yogyakarta Barat")

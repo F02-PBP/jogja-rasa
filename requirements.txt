@@ -1,8 +1,8 @@
 django
+django-extensions
 gunicorn
 whitenoise
 psycopg2-binary
 requests
 urllib3
 pandas
-geopy
