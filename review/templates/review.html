@@ -62,12 +62,12 @@
     <div id="restaurant-table" class="flex justify-center overflow-scroll">
     </div>
 
-    ]
 </main>
 
 <script>
 
     const dataElement = document.getElementById('my-data');
+
     async function getRestaurant() {
         const restaurants = dataElement.getAttribute('data-restaurant');
         return fetch(restaurants).then((res) => res.json());
@@ -145,9 +145,6 @@
 
     refreshPage();
 
-    document.getElementById('show_review').addEventListener('click', function(){
-        refreshPage();
-    })
     
     
 </script>

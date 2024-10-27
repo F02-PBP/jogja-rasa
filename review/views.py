@@ -57,8 +57,8 @@ def show_review_more(request, id):
 def delete_review(request, id):
     review = Review.objects.get(pk = id)
     restaurant_pk = review.restaurant.pk
-    print(restaurant_pk)
-    review.delete()
+    if request.user.pk == review.user.pk:
+        review.delete()
     return HttpResponseRedirect(reverse('review:show_review_more', args=[restaurant_pk]))
 
 @csrf_exempt
