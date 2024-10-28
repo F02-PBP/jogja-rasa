@@ -10,7 +10,7 @@
 | Claudia Paskalia Koesno    | 2306275355   | ravenalaa   |
 | Palastha Zhorif Kawiswara  | 2306245705   | astzkkk99   |
 | Darren Aldrich             | 2306206856   | Dardrich    |
-| Adam Caldipawell Sembiring | 232306227160 | AdamCS-code |
+| Adam Caldipawell Sembiring | 2306227160   | AdamCS-code |
 
 ## 📜 Cerita Aplikasi
 
