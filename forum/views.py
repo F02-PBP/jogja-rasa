@@ -56,7 +56,7 @@ def add_comment(request, topic_id):
             comment.author = request.user
             comment.created_at = timezone.now()
             comment.save()
-            return redirect('topic_detail', topic_id=topic_id)
+            return redirect('forum:topic_detail', topic_id=topic_id)
     else:
         form = CommentForm()
     return render(request, 'forum/add_comment.html', {'form': form, 'topic': topic})
