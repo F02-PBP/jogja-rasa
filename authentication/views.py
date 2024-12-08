@@ -1,9 +1,10 @@
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from main.models import UserProfile
 import json
+
 
 @csrf_exempt
 def register(request):
@@ -116,4 +117,11 @@ def check_auth_status(request):
     return JsonResponse({
         "status": False,
         "message": "User tidak terautentikasi"
+    })
+
+def logout(request):
+    auth_logout(request)
+    return JsonResponse({
+        "status": True,
+        "message": "Logout berhasil!"
     })
