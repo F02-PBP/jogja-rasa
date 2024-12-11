@@ -10,6 +10,7 @@ from restaurants.models import *
 from reservation.models import Reservation, Restaurant
 import json
 import uuid
+import logging
 
 @login_required
 def show_reservation(request):
@@ -146,7 +147,6 @@ def show_json(request):
             'message': str(e)
         }, status=500)
 
-import logging
 logger = logging.getLogger(__name__)
 @csrf_exempt
 def create_reservation_flutter(request):
@@ -154,7 +154,7 @@ def create_reservation_flutter(request):
         try:
             data = json.loads(request.body)
             reservation_id = str(uuid.uuid4())
-            reservation_date = datetime.strptime(data["date"], "%Y-%m-%d")  # Adjust the format as needed
+            reservation_date = datetime.strptime(data["date"], "%Y-%m-%d") 
             reservation_time = datetime.strptime(data["time"], "%H:%M").time()
             restaurant_instance = Restaurant.objects.get(id=data["restaurant"]["id"])
 
@@ -164,7 +164,7 @@ def create_reservation_flutter(request):
                 date=reservation_date,
                 time=reservation_time,
                 number_of_people=data["number_of_people"],
-                restaurant=restaurant_instance  # This assumes restaurant is a ForeignKey
+                restaurant=restaurant_instance
             )
 
             # Save the new reservation
@@ -190,35 +190,31 @@ def delete_reservation_flutter(request, id):
         try:
             # Try to convert the ID to a UUID
             reservation_id = uuid.UUID(id)
-            
-            # Retrieve the reservation object
             reservation = get_object_or_404(Reservation, id=reservation_id)
-            
-            # If found, delete the reservation (or any other action you want)
             reservation.delete()
             return HttpResponse("Reservation deleted successfully.")
         
         except ValueError as e:
-            # Handle the case where the ID is not a valid UUID
+            # If ID is not a valid UUID
             print(f"Invalid UUID format: {id}")
             return HttpResponse("Invalid reservation ID format.", status=400)
 
 @csrf_exempt
 def edit_reservation_flutter(request, id):
-    if request.method == 'PUT':  # Make sure you are using the correct HTTP method
+    if request.method == 'PUT':
         try:
-            reservation_id = uuid.UUID(id)  # Convert the string ID to a UUID
+            reservation_id = uuid.UUID(id)
             reservation = get_object_or_404(Reservation, id=reservation_id)
 
             try:
-                data = json.loads(request.body)  # Parse JSON data from the request body
+                data = json.loads(request.body)
             except json.JSONDecodeError:
                 return JsonResponse({
                     'success': False, 
                     'message': 'Invalid JSON data'
                 }, status=400)
             
-            # Update fields if they exist in the request data
+            # Update fields in the request data
             if 'date' in data:
                 reservation.date = data['date']
             if 'time' in data:
@@ -226,9 +222,8 @@ def edit_reservation_flutter(request, id):
             if 'number_of_people' in data:
                 reservation.number_of_people = data['number_of_people']
 
-            reservation.save()  # Save the updated reservation to the database
+            reservation.save()
 
-            # Return success response
             return JsonResponse({
                 'success': True,
                 'message': 'Reservation updated successfully'
@@ -246,7 +241,6 @@ def edit_reservation_flutter(request, id):
                 'message': f'Error updating reservation: {str(e)}'
             }, status=500)
 
-    # Return method not allowed if the HTTP method is not POST
     return JsonResponse({
         'success': False,
         'message': 'Invalid HTTP method'
