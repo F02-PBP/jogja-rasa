@@ -1,12 +1,16 @@
 import datetime
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
+import datetime
+from datetime import datetime
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
 from main.models import *
 from restaurants.models import *
+from reservation.models import Reservation, Restaurant
 from reservation.models import Reservation, Restaurant
 import json
 import uuid
@@ -56,6 +60,7 @@ def edit_reservation(request, id):
                     'message': 'Invalid JSON data'
                 }, status=400)
 
+            # print(f"Received data: {data}")
             # print(f"Received data: {data}")
             if 'date' in data:
                 reservation.date = data['date']
