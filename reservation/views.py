@@ -1,12 +1,15 @@
-from django.shortcuts import render, redirect
+import datetime
+from datetime import datetime
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.core import serializers
 from main.models import *
 from restaurants.models import *
-from reservation.models import Reservation
+from reservation.models import Reservation, Restaurant
 import json
+import uuid
 
 @login_required
 def show_reservation(request):
@@ -52,7 +55,7 @@ def edit_reservation(request, id):
                     'message': 'Invalid JSON data'
                 }, status=400)
 
-            print(f"Received data: {data}")
+            # print(f"Received data: {data}")
             if 'date' in data:
                 reservation.date = data['date']
             if 'time' in data:
@@ -142,3 +145,109 @@ def show_json(request):
             'success': False,
             'message': str(e)
         }, status=500)
+
+import logging
+logger = logging.getLogger(__name__)
+@csrf_exempt
+def create_reservation_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            reservation_id = str(uuid.uuid4())
+            reservation_date = datetime.strptime(data["date"], "%Y-%m-%d")  # Adjust the format as needed
+            reservation_time = datetime.strptime(data["time"], "%H:%M").time()
+            restaurant_instance = Restaurant.objects.get(id=data["restaurant"]["id"])
+
+            new_reservation = Reservation.objects.create(
+                id=reservation_id,
+                user=request.user,
+                date=reservation_date,
+                time=reservation_time,
+                number_of_people=data["number_of_people"],
+                restaurant=restaurant_instance  # This assumes restaurant is a ForeignKey
+            )
+
+            # Save the new reservation
+            new_reservation.save()
+
+            # Respond with success
+            return JsonResponse({"status": "success", "reservation_id": reservation_id}, status=200)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON format"}, status=400)
+        except Restaurant.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Restaurant not found"}, status=404)
+        except Exception as e:
+            logger.error(f"Error creating reservation: {e}", exc_info=True)
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    # Handle non-POST requests
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+@csrf_exempt
+def delete_reservation_flutter(request, id):
+    if request.method == 'DELETE':
+        try:
+            # Try to convert the ID to a UUID
+            reservation_id = uuid.UUID(id)
+            
+            # Retrieve the reservation object
+            reservation = get_object_or_404(Reservation, id=reservation_id)
+            
+            # If found, delete the reservation (or any other action you want)
+            reservation.delete()
+            return HttpResponse("Reservation deleted successfully.")
+        
+        except ValueError as e:
+            # Handle the case where the ID is not a valid UUID
+            print(f"Invalid UUID format: {id}")
+            return HttpResponse("Invalid reservation ID format.", status=400)
+
+@csrf_exempt
+def edit_reservation_flutter(request, id):
+    if request.method == 'PUT':  # Make sure you are using the correct HTTP method
+        try:
+            reservation_id = uuid.UUID(id)  # Convert the string ID to a UUID
+            reservation = get_object_or_404(Reservation, id=reservation_id)
+
+            try:
+                data = json.loads(request.body)  # Parse JSON data from the request body
+            except json.JSONDecodeError:
+                return JsonResponse({
+                    'success': False, 
+                    'message': 'Invalid JSON data'
+                }, status=400)
+            
+            # Update fields if they exist in the request data
+            if 'date' in data:
+                reservation.date = data['date']
+            if 'time' in data:
+                reservation.time = data['time']
+            if 'number_of_people' in data:
+                reservation.number_of_people = data['number_of_people']
+
+            reservation.save()  # Save the updated reservation to the database
+
+            # Return success response
+            return JsonResponse({
+                'success': True,
+                'message': 'Reservation updated successfully'
+            }, status=200)
+
+        except Reservation.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'message': 'Reservation not found'
+            }, status=404)
+        except Exception as e:
+            print(f"Error updating reservation: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'message': f'Error updating reservation: {str(e)}'
+            }, status=500)
+
+    # Return method not allowed if the HTTP method is not POST
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid HTTP method'
+    }, status=405)
