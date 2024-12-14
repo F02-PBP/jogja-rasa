@@ -15,7 +15,7 @@ def find_invalid_uuids():
         rows = cursor.fetchall()
         for row in rows:
             try:
-                uuid.UUID(row[0])
+                uuid.UUID(str(row[0]))
             except ValueError:
                 print(f"Invalid UUID found: {row[0]}")
                 invalid_uuids.append(row[0])
