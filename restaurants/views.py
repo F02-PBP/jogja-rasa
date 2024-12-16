@@ -20,3 +20,4 @@ def get_restaurants(request):
         'location': restaurant.get_location()
     } for restaurant in restaurants]
     return JsonResponse({'restaurants': data})
+

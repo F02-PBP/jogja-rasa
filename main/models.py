@@ -17,7 +17,4 @@ class UserProfile(models.Model):
     full_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
     interested_in = models.CharField(max_length=50, choices=interested_food, default="Pilih Makanan Favorit", blank=False)
-
-    
-
-
+    # interested_in = "soto"

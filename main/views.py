@@ -172,7 +172,7 @@ def rekomendasi_makanan(request):
     try:
         user_profile = request.user.userprofile
         interested_food = user_profile.interested_in
-        food_display = dict(UserProfile.FOOD_CHOICES)[interested_food]
+        food_display = dict(UserProfile.interested_food)[interested_food]
 
         food_type_keywords = {
             'soto': ['soto', 'saoto'],
