@@ -70,7 +70,7 @@
       let lastCommentTimestamp = 0;
     {% endif %}
     
-    function fetchNewComments() {
+    async function fetchNewComments() {
       fetch(`/forum/api/fetch_new_comments/{{ topic.id }}/${lastCommentTimestamp}/`)
         .then(response => response.json())
         .then(data => {

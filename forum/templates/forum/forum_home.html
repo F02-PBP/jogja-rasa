@@ -41,7 +41,7 @@
       let lastTopicTimestamp = 0;
     {% endif %}
     
-    function fetchNewTopics() {
+    async function fetchNewTopics() {
       fetch(`/forum/api/fetch_new_topics/${lastTopicTimestamp}/`)
         .then(response => response.json())
         .then(data => {
