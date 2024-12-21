@@ -15,7 +15,7 @@ from django.views.decorators.http import require_POST
 from main.models import UserProfile
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-
+import json
 @login_required(login_url='/login/')
 def show_review(request):
     restaurants = Restaurant.objects.all()
@@ -74,7 +74,65 @@ def create_review(request):
     new_review = Review(user=user, restaurant=resto, review=review, date=date, rating=rating)
     new_review.save()
     return HttpResponse(b"CREATED", status=201)
+
+@csrf_exempt
+@require_POST
+def create_review_flutter(request):
+    data = json.loads(request.body)
+    resto_id = data.get('pk_resto')
+    rating = data.get('rating')
+    review = data.get('review')
+    user = request.user
+    date = datetime.now()
+    resto = Restaurant.objects.get(pk=resto_id)
+        
+    new_review = Review(user=user, restaurant=resto, review=review, date=date, rating=rating)
+    new_review.save()
+    return JsonResponse({
+        "status" : True
+    }, status=201) 
+
+def show_reviews_json_flutter(request):
+    reviews = Review.objects.select_related('user','restaurant')
+
+    data = []
+    for review in reviews:
+        data.append({
+            "pk" : review.id,
+            "fields" : {
+                "date": review.date,
+                "username": review.user.username,
+                "user": review.user.id,
+                "rating": review.rating,
+                "review": review.review,
+                "restaurant" : review.restaurant.id
+            }
+        })
+        
+    return JsonResponse(data, safe=False)
+
+
+def show_restaurant_reviews_json_flutter(request, id):
+    reviews = Review.objects.select_related('user','restaurant')
+
+    data = []
+    for review in reviews:
+        if review.restaurant.id == id:
+            data.append({
+                "pk" : review.id,
+                "fields" : {
+                "date": review.date,
+                "username": review.user.username,
+                "user": review.user.id,
+                "rating": review.rating,
+                "review": review.review,
+                "restaurant" : review.restaurant.id
+                }
+            })
+        
+    return JsonResponse(data, safe=False)
     
+
 def show_restaurants_json(request):
     restaurants = Restaurant.objects.all()
     return HttpResponse(serializers.serialize('json', restaurants), content_type="application/json")
