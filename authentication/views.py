@@ -119,9 +119,16 @@ def check_auth_status(request):
         "message": "User tidak terautentikasi"
     })
 
+@csrf_exempt
 def logout(request):
-    auth_logout(request)
+    if request.method == 'POST':
+        auth_logout(request)
+        return JsonResponse({
+            "status": True,
+            "message": "Logout berhasil!"
+        }, status=200)
+
     return JsonResponse({
-        "status": True,
-        "message": "Logout berhasil!"
-    })
+        "status": False,
+        "message": "Method not allowed."
+    }, status=405)
