@@ -138,7 +138,8 @@ def toggle_bookmark_flutter(request, restaurant_id):
         return JsonResponse({
             'error': str(e)
         }, status=500)
-    
+@login_required
+@csrf_exempt
 def get_bookmarks_flutter(request):
     try:
         data = []
