@@ -166,13 +166,16 @@ def search_restaurants(request):
     return JsonResponse({'results': results})
 
 def rekomendasi_makanan(request):
+    print("Recommendation request received") 
     if not request.user.is_authenticated:
+        print("User not authenticated")
         return JsonResponse({'results': []})
     
     try:
         user_profile = request.user.userprofile
-        interested_food = user_profile.interested_in
+        interested_food = user_profile.interested_in.lower()
         food_display = dict(UserProfile.interested_food)[interested_food]
+        print(f"Interested food: {interested_food}, Display: {food_display}")
 
         food_type_keywords = {
             'soto': ['soto', 'saoto'],
@@ -212,7 +215,7 @@ def rekomendasi_makanan(request):
                 'recommendations': recommendations,
                 'interested_food': food_display
             })
-        
+        print(f"Found {len(recommendations)} recommendations")
         return JsonResponse({'recommendations': []})
     except Exception as e:
         print(f"Error in get_recommendations: {e}") 
