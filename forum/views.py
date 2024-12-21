@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Topic, Comment
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,8 @@ from django.http import HttpResponse
 from django.core import serializers
 from django.http import JsonResponse
 from django.utils import timezone
-
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 
 def forum_home(request):
     topics = Topic.objects.all()
@@ -32,6 +34,7 @@ def topic_detail(request, topic_id):
     return render(request, 'forum/topic_detail.html', {'topic': topic, 'comments': comments, 'form': form})
 
 @login_required
+@csrf_exempt
 def add_topic(request):
     if request.method == 'POST':
         form = TopicForm(request.POST)
@@ -119,6 +122,10 @@ def show_user_topics_json(request):
     # Return data serialized as JSON
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
+def show_all_topics_json(request):
+    data = Topic.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
 def show_user_comments_json(request):
     # Filter comments created by the logged-in user
     data = Comment.objects.filter(author=request.user)
@@ -139,3 +146,113 @@ def fetch_new_comments(request, topic_id, last_timestamp):
     comments = topic.comments.filter(created_at__gt=last_timestamp).order_by('-created_at')
     data = serializers.serialize("json", comments)
     return JsonResponse(data, safe=False)
+
+@csrf_exempt
+def add_topic_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        title = data['title']
+        description = data['description']
+        topic = Topic(title=title, description=description, author=request.user)
+        topic.save()
+        return JsonResponse({'status': 'success', 'message': 'Topik berhasil dibuat'}, safe=False)
+    return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, safe=False)
+
+@csrf_exempt
+def add_comment_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        topic_id = data['topic_id']
+        comment = data['comment']
+        comment = Comment(topic_id=topic_id, comment=comment, author=request.user)
+        comment.save()
+        return JsonResponse({'status': 'success', 'message': 'Komentar berhasil ditambahkan'}, safe=False)
+    return JsonResponse({'status': 'error', 'message': 'Metode tidak diizinkan'}, safe=False)
+
+def get_user_name(request):
+    return JsonResponse({'username': request.user.username}, safe=False)
+
+def get_user_name_by_id(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    return JsonResponse({'username': user.username}, safe=False)
+
+@csrf_exempt
+def edit_topic_flutter(request, topic_id):
+    if request.method == 'POST':
+        try:
+            topic = get_object_or_404(Topic, pk=topic_id)
+            # Check if user is the author
+            if request.user != topic.author:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "You can only edit your own topics"
+                }, status=403)
+                
+            data = json.loads(request.body)
+            topic.title = data['title']
+            topic.description = data['description']
+            topic.save()
+            
+            return JsonResponse({
+                "status": "success",
+                "message": "Topic updated successfully!"
+            })
+        except Exception as e:
+            return JsonResponse({
+                "status": "error",
+                "message": str(e)
+            }, status=400)
+
+@csrf_exempt
+def delete_topic_flutter(request, topic_id):
+    try:
+        topic = get_object_or_404(Topic, pk=topic_id)
+        # Check if user is the author
+        if request.user != topic.author:
+            return JsonResponse({
+                "status": "error",
+                "message": "You can only delete your own topics"
+            }, status=403)
+            
+        topic.delete()
+        return JsonResponse({
+            "status": "success",
+            "message": "Topic deleted successfully!"
+        })
+    except Exception as e:
+        return JsonResponse({
+            "status": "error",
+            "message": str(e)
+        }, status=400)
+
+@csrf_exempt
+def edit_comment_flutter(request, id):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            comment = Comment.objects.get(pk=id)
+            if request.user.id == comment.author.id:
+                comment.comment = data['comment']
+                comment.save()
+                return JsonResponse({"status": "success"})
+            return JsonResponse({"status": "error", "message": "Unauthorized"})
+        except Comment.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Comment not found"})
+    return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+@csrf_exempt
+def delete_comment_flutter(request, id):
+    try:
+        comment = Comment.objects.get(pk=id)
+        if request.user.id == comment.author.id:
+            comment.delete()
+            return JsonResponse({"status": "success"})
+        return JsonResponse({"status": "error", "message": "Unauthorized"})
+    except Comment.DoesNotExist:
+        return JsonResponse({"status": "error", "message": "Comment not found"})
+
+def get_topic_comments_json(request, topic_id):
+    # Filter comments untuk topic tertentu
+    topic = get_object_or_404(Topic, pk=topic_id)
+    data = Comment.objects.filter(topic=topic)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
