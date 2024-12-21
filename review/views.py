@@ -110,6 +110,27 @@ def show_reviews_json_flutter(request):
         })
         
     return JsonResponse(data, safe=False)
+
+
+def show_restaurant_reviews_json_flutter(request, id):
+    reviews = Review.objects.select_related('user','restaurant')
+
+    data = []
+    for review in reviews:
+        if review.restaurant.id == id:
+            data.append({
+                "pk" : review.id,
+                "fields" : {
+                "date": review.date,
+                "username": review.user.username,
+                "user": review.user.id,
+                "rating": review.rating,
+                "review": review.review,
+                "restaurant" : review.restaurant.id
+                }
+            })
+        
+    return JsonResponse(data, safe=False)
     
 
 def show_restaurants_json(request):

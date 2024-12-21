@@ -13,4 +13,5 @@ urlpatterns =[
     path('delete_review/<int:id>/', delete_review, name='delete_review'),
     path('create_review_flutter/', create_review_flutter),
     path('show_reviews_json_flutter/', show_reviews_json_flutter),
+    path('show_restaurant_reviews_json_flutter/<uuid:id>/', show_restaurant_reviews_json_flutter),
 ]
